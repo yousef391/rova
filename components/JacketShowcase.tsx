@@ -74,6 +74,18 @@ const JacketShowcase: React.FC = () => {
       
       if (res.ok) {
         setOrderSuccess(true);
+        
+        // Track the purchase event for Facebook Pixel
+        if (typeof window !== "undefined" && (window as any).fbq) {
+          (window as any).fbq('track', 'Purchase', {
+            currency: 'DZD',
+            value: totalPrice,
+            content_name: jacket.name,
+            content_category: jacket.productType,
+            content_type: 'product',
+          });
+        }
+
         setTimeout(() => {
           setShowForm(false);
           setOrderSuccess(false);
