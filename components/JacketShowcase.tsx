@@ -76,8 +76,9 @@ const JacketShowcase: React.FC = () => {
         setOrderSuccess(true);
         
         // Track the purchase event for Facebook Pixel
-        if (typeof window !== "undefined" && (window as any).fbq) {
-          (window as any).fbq('track', 'Purchase', {
+        type FBQ = (action: string, event: string, params?: Record<string, unknown>) => void;
+        if (typeof window !== "undefined" && (window as unknown as { fbq?: FBQ }).fbq) {
+          ((window as unknown as { fbq: FBQ }).fbq)('track', 'Purchase', {
             currency: 'DZD',
             value: totalPrice,
             content_name: jacket.name,
@@ -121,6 +122,7 @@ const JacketShowcase: React.FC = () => {
     >
       {/* ────── HEADER (Desktop Only) ────── */}
       <header className="hidden lg:flex relative z-30 justify-between items-center px-10 py-8 shrink-0 w-full">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="Logo" className="h-20 w-auto object-contain drop-shadow-2xl" />
         <div className="flex items-center bg-white/10 backdrop-blur-md rounded-full px-5 py-2.5 gap-3 border border-white/20 shadow-xl shadow-black/20">
           <span className="text-2xl leading-none mt-[-2px]">🇩🇿</span>
@@ -137,6 +139,7 @@ const JacketShowcase: React.FC = () => {
         
         {/* Mobile Header */}
         <div className="flex items-center justify-center w-full flex-shrink-0 py-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Logo" className="h-[4.5rem] w-auto object-contain drop-shadow-xl scale-125" />
         </div>
 
