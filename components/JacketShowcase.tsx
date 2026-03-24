@@ -129,7 +129,7 @@ const JacketShowcase: React.FC = () => {
         </div>
 
         {/* Product Image Box with Floating Badges */}
-        <div className="relative w-full aspect-[4/5] max-h-[55vh] rounded-3xl overflow-hidden bg-white/5 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0 z-40">
+        <div className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden bg-white/5 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0 z-40">
           <AnimatePresence mode="wait">
             <motion.div
               key={jacket.id}
@@ -244,12 +244,12 @@ const JacketShowcase: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 className="flex flex-col gap-3 bg-white/10 p-5 rounded-3xl backdrop-blur-xl border border-white/10 mt-2 z-50 shadow-2xl"
-                style={{ fontFamily: "var(--font-dm)" }}
+                style={{ fontFamily: "var(--font-dm)", direction: "rtl" }}
                 onSubmit={handleOrderSubmit}
               >
-                <h3 className="text-white font-black uppercase tracking-tight text-lg mb-1" style={{ fontFamily: "var(--font-heading)" }}>Express Checkout</h3>
-                <input required name="name" placeholder="Full Name" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
-                <input required type="tel" name="phone" placeholder="Phone Number" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
+                <h3 className="text-white font-black uppercase tracking-tight text-lg mb-1" style={{ fontFamily: "var(--font-heading)" }}>تأكيد الطلبية</h3>
+                <input required name="name" placeholder="الاسم الكامل" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
+                <input required type="tel" name="phone" placeholder="رقم الهاتف" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors text-right" dir="ltr" />
                 <div className="flex flex-col gap-2">
                   <select 
                     required 
@@ -257,9 +257,9 @@ const JacketShowcase: React.FC = () => {
                     onChange={e => { setSelectedWilaya(e.target.value); setSelectedCommune(""); }}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none"
                   >
-                    <option value="" disabled className="text-black">Select Wilaya</option>
+                    <option value="" disabled className="text-black">اختر الولاية</option>
                     {algeriaData.wilayas.map(w => (
-                      <option key={w.wilaya_id} value={w.wilaya_id} className="text-black">
+                      <option key={w.wilaya_id} value={w.wilaya_id} className="text-black text-left" dir="ltr">
                         {w.wilaya_id} - {w.wilaya_name_latin}
                       </option>
                     ))}
@@ -271,9 +271,9 @@ const JacketShowcase: React.FC = () => {
                     disabled={!selectedWilaya}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none disabled:opacity-50"
                   >
-                    <option value="" disabled className="text-black">Commune</option>
+                    <option value="" disabled className="text-black">البلدية</option>
                     {communesForWilaya.map(c => (
-                      <option key={c.commune_id} value={c.commune_name_latin} className="text-black">
+                      <option key={c.commune_id} value={c.commune_name_latin} className="text-black text-left" dir="ltr">
                         {c.commune_name_latin}
                       </option>
                     ))}
@@ -281,26 +281,26 @@ const JacketShowcase: React.FC = () => {
                 </div>
                 
                 {/* Order Summary */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1 mt-1">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1 mt-1 font-sans">
                   <div className="flex justify-between text-white/70 text-xs">
-                    <span>Subtotal (Size: {selectedSize})</span>
-                    <span>{jacket.price}</span>
+                    <span>المجموع (المقاس: {selectedSize})</span>
+                    <span dir="ltr">{jacket.price}</span>
                   </div>
                   <div className="flex justify-between text-white/70 text-xs">
-                    <span>Delivery</span>
-                    <span className="text-white font-medium">{selectedWilaya ? `${deliveryPrice} DA` : '---'}</span>
+                    <span>التوصيل</span>
+                    <span className="text-white font-medium" dir="ltr">{selectedWilaya ? `${deliveryPrice} DA` : '---'}</span>
                   </div>
                   <div className="h-[1px] w-full bg-white/10 my-1"/>
                   <div className="flex justify-between text-white text-sm font-bold">
-                    <span>Total</span>
-                    <span>{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
+                    <span>السعر النهائي</span>
+                    <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
                   </div>
                 </div>
 
-                <div className="flex gap-3 mt-1">
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors cursor-pointer">Cancel</button>
+                <div className="flex gap-3 mt-1 font-sans" dir="ltr">
+                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors cursor-pointer">إلغاء</button>
                   <button disabled={isSubmitting || orderSuccess} type="submit" className="flex-1 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] cursor-pointer disabled:opacity-75">
-                    {isSubmitting ? "Sending..." : orderSuccess ? "Order Placed! ✓" : "Confirm Order"}
+                    {isSubmitting ? "جاري الإرسال..." : orderSuccess ? "تم الطلب بنجاح ✓" : "تأكيد الطلب"}
                   </button>
                 </div>
               </motion.form>
@@ -488,12 +488,12 @@ const JacketShowcase: React.FC = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="absolute bottom-0 right-0 w-[360px] flex flex-col gap-3 bg-white/10 p-6 rounded-3xl backdrop-blur-xl border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
-                style={{ fontFamily: "var(--font-dm)" }}
+                style={{ fontFamily: "var(--font-dm)", direction: "rtl" }}
                 onSubmit={handleOrderSubmit}
               >
-                <h3 className="text-white font-black uppercase tracking-tight text-xl mb-2" style={{ fontFamily: "var(--font-heading)" }}>Express Checkout</h3>
-                <input required name="name" placeholder="Full Name" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
-                <input required type="tel" name="phone" placeholder="Phone Number" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
+                <h3 className="text-white font-black uppercase tracking-tight text-xl mb-2" style={{ fontFamily: "var(--font-heading)" }}>تأكيد الطلبية</h3>
+                <input required name="name" placeholder="الاسم الكامل" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
+                <input required type="tel" name="phone" placeholder="رقم الهاتف" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors text-right" dir="ltr" />
                 <div className="flex flex-col gap-2">
                   <select 
                     required 
@@ -501,9 +501,9 @@ const JacketShowcase: React.FC = () => {
                     onChange={e => { setSelectedWilaya(e.target.value); setSelectedCommune(""); }}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/40 transition-colors appearance-none cursor-pointer"
                   >
-                    <option value="" disabled className="text-black">Select Wilaya</option>
+                    <option value="" disabled className="text-black">اختر الولاية</option>
                     {algeriaData.wilayas.map(w => (
-                      <option key={w.wilaya_id} value={w.wilaya_id} className="text-black">
+                      <option key={w.wilaya_id} value={w.wilaya_id} className="text-black text-left" dir="ltr">
                         {w.wilaya_id} - {w.wilaya_name_latin}
                       </option>
                     ))}
@@ -515,9 +515,9 @@ const JacketShowcase: React.FC = () => {
                     disabled={!selectedWilaya}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/40 transition-colors appearance-none disabled:opacity-50 cursor-pointer"
                   >
-                    <option value="" disabled className="text-black">Commune</option>
+                    <option value="" disabled className="text-black">البلدية</option>
                     {communesForWilaya.map(c => (
-                      <option key={c.commune_id} value={c.commune_name_latin} className="text-black">
+                      <option key={c.commune_id} value={c.commune_name_latin} className="text-black text-left" dir="ltr">
                         {c.commune_name_latin}
                       </option>
                     ))}
@@ -525,26 +525,26 @@ const JacketShowcase: React.FC = () => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-1.5 mt-1">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-1.5 mt-1 font-sans">
                   <div className="flex justify-between text-white/70 text-sm">
-                    <span>Subtotal (Size: {selectedSize})</span>
-                    <span>{jacket.price}</span>
+                    <span>المجموع (المقاس: {selectedSize})</span>
+                    <span dir="ltr">{jacket.price}</span>
                   </div>
                   <div className="flex justify-between text-white/70 text-sm">
-                    <span>Delivery</span>
-                    <span className="text-white font-medium">{selectedWilaya ? `${deliveryPrice} DA` : '---'}</span>
+                    <span>التوصيل</span>
+                    <span className="text-white font-medium" dir="ltr">{selectedWilaya ? `${deliveryPrice} DA` : '---'}</span>
                   </div>
                   <div className="h-[1px] w-full bg-white/10 my-1"/>
                   <div className="flex justify-between text-white text-base font-bold">
-                    <span>Total</span>
-                    <span>{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
+                    <span>السعر النهائي</span>
+                    <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
                   </div>
                 </div>
 
-                <div className="flex gap-3 mt-2">
-                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors cursor-pointer">Cancel</button>
+                <div className="flex gap-3 mt-2 font-sans" dir="ltr">
+                  <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors cursor-pointer">إلغاء</button>
                   <button disabled={isSubmitting || orderSuccess} type="submit" className="flex-[1.5] py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.3)] cursor-pointer disabled:opacity-75">
-                    {isSubmitting ? "Sending..." : orderSuccess ? "Order Placed! ✓" : "Place Order"}
+                    {isSubmitting ? "جاري الإرسال..." : orderSuccess ? "تم الطلب بنجاح ✓" : "تأكيد الطلب"}
                   </button>
                 </div>
               </motion.form>
