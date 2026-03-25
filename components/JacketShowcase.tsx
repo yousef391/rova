@@ -114,6 +114,20 @@ const JacketShowcase: React.FC = () => {
     [currentIndex]
   );
 
+  const handleAddToCartClick = () => {
+    setShowForm(true);
+    type FBQ = (action: string, event: string, params?: Record<string, unknown>) => void;
+    if (typeof window !== "undefined" && (window as unknown as { fbq?: FBQ }).fbq) {
+      ((window as unknown as { fbq: FBQ }).fbq)('track', 'AddToCart', {
+        currency: 'DZD',
+        value: productPrice,
+        content_name: jacket.name,
+        content_category: jacket.productType,
+        content_type: 'product',
+      });
+    }
+  };
+
   return (
     <motion.div
       className="relative w-screen min-h-screen lg:h-screen overflow-hidden flex flex-col"
@@ -247,8 +261,8 @@ const JacketShowcase: React.FC = () => {
                  </div>
 
                  {/* Full Width Buy Button */}
-                 <button onClick={() => setShowForm(true)} className="w-full mt-2 py-4 rounded-[1.2rem] bg-white text-black font-black uppercase text-[13px] tracking-[0.2em] shadow-[0_10px_40px_rgba(255,255,255,0.3)] active:scale-[0.98] transition-transform flex justify-center items-center gap-2" style={{ fontFamily: "var(--font-dm)" }}>
-                   Proceed to Checkout
+                 <button onClick={handleAddToCartClick} className="w-full mt-2 py-4 rounded-[1.2rem] bg-white text-black font-black uppercase text-[13px] tracking-[0.2em] shadow-[0_10px_40px_rgba(255,255,255,0.3)] active:scale-[0.98] transition-transform flex justify-center items-center gap-2" style={{ fontFamily: "var(--font-dm)" }}>
+                   Ajout au panier
                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                  </button>
                </motion.div>
@@ -488,13 +502,13 @@ const JacketShowcase: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                onClick={() => setShowForm(true)}
+                onClick={handleAddToCartClick}
                 whileHover={{ scale: 1.04, backgroundColor: "rgba(255,255,255,1)" }}
                 whileTap={{ scale: 0.96 }}
                 className="px-10 py-3.5 rounded-full text-sm font-semibold tracking-widest uppercase bg-white/90 text-black transition-colors duration-200"
                 style={{ fontFamily: "var(--font-dm)" }}
               >
-                Buy Now
+                Ajout au panier
               </motion.button>
             ) : (
               <motion.form
