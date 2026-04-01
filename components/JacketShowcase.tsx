@@ -130,7 +130,7 @@ const JacketShowcase: React.FC = () => {
 
   return (
     <motion.div
-      className="relative w-screen min-h-screen lg:h-screen overflow-hidden flex flex-col"
+      className="relative w-screen min-h-screen lg:min-h-screen overflow-hidden flex flex-col"
       animate={{ backgroundColor: jacket.bg }}
       transition={{ duration: 0.6 }}
     >
