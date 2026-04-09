@@ -6,14 +6,7 @@ import { jackets } from "@/data/jackets";
 import algeriaData from "@/data/algeria.json";
 import Image from "next/image";
 
-function getDeliveryPrice(wilayaId: number) {
-  if (wilayaId === 16) return 400; // Alger
-  if ([9, 35, 42].includes(wilayaId)) return 500; // Algiers nearby
-  const southWilayas = [1, 8, 11, 30, 32, 33, 37, 39, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58];
-  if (southWilayas.includes(wilayaId) || wilayaId > 58) return 1200; // South
-  return 800; // Rest of North/High Plains
-}
-
+// Using pure Yalidine data and pre-discounted Delivery Fees!
 const JacketShowcase: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showForm, setShowForm] = useState(false);
@@ -26,8 +19,10 @@ const JacketShowcase: React.FC = () => {
 
   const jacket = jackets[currentIndex];
   
-  const communesForWilaya = selectedWilaya ? algeriaData.communes.filter(c => c.wilaya_id.toString() === selectedWilaya) : [];
-  const deliveryPrice = selectedWilaya ? getDeliveryPrice(parseInt(selectedWilaya)) : 0;
+  const communesForWilaya = selectedWilaya ? algeriaData.communes.filter((c: any) => c.wilaya_id.toString() === selectedWilaya) : [];
+  const selectedWilayaObj = algeriaData.wilayas.find((w: any) => w.wilaya_id.toString() === selectedWilaya);
+  const deliveryPrice = selectedWilayaObj ? selectedWilayaObj.delivery_fee : 0;
+  
   const productPrice = parseFloat(jacket.price.replace(/[^\d]/g, ""));
   const totalPrice = productPrice + deliveryPrice;
 
@@ -52,7 +47,7 @@ const JacketShowcase: React.FC = () => {
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
-    const wilayaObj = algeriaData.wilayas.find(w => w.wilaya_id.toString() === selectedWilaya);
+    const wilayaObj = algeriaData.wilayas.find((w: any) => w.wilaya_id.toString() === selectedWilaya);
 
     try {
       const res = await fetch('/api/order', {
@@ -287,7 +282,7 @@ const JacketShowcase: React.FC = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none"
                   >
                     <option value="" disabled className="text-black">اختر الولاية</option>
-                    {algeriaData.wilayas.map(w => (
+                    {algeriaData.wilayas.map((w: any) => (
                       <option key={w.wilaya_id} value={w.wilaya_id} className="text-black text-left" dir="ltr">
                         {w.wilaya_id} - {w.wilaya_name_latin}
                       </option>
@@ -301,7 +296,7 @@ const JacketShowcase: React.FC = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none disabled:opacity-50"
                   >
                     <option value="" disabled className="text-black">البلدية</option>
-                    {communesForWilaya.map(c => (
+                    {communesForWilaya.map((c: any) => (
                       <option key={c.commune_id} value={c.commune_name_latin} className="text-black text-left" dir="ltr">
                         {c.commune_name_latin}
                       </option>
@@ -531,7 +526,7 @@ const JacketShowcase: React.FC = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/40 transition-colors appearance-none cursor-pointer"
                   >
                     <option value="" disabled className="text-black">اختر الولاية</option>
-                    {algeriaData.wilayas.map(w => (
+                    {algeriaData.wilayas.map((w: any) => (
                       <option key={w.wilaya_id} value={w.wilaya_id} className="text-black text-left" dir="ltr">
                         {w.wilaya_id} - {w.wilaya_name_latin}
                       </option>
@@ -545,7 +540,7 @@ const JacketShowcase: React.FC = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/40 transition-colors appearance-none disabled:opacity-50 cursor-pointer"
                   >
                     <option value="" disabled className="text-black">البلدية</option>
-                    {communesForWilaya.map(c => (
+                    {communesForWilaya.map((c: any) => (
                       <option key={c.commune_id} value={c.commune_name_latin} className="text-black text-left" dir="ltr">
                         {c.commune_name_latin}
                       </option>
