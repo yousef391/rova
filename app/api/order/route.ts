@@ -1,19 +1,33 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, phone, wilaya, commune, item, color, size, price, delivery, total } = body;
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    // 1. Insert into Supabase Orders Table
+    const { error: dbError } = await supabase
+      .from('orders')
+      .insert([
+        { name, phone, wilaya, commune, item, color, size, price, delivery, total, status: 'new' }
+      ]);
 
-    // Log the order locally as fallback
-    console.log("=== NEW ORDER ===", body);
+    if (dbError) {
+      console.error("Supabase Error:", dbError);
+    } else {
+      console.log("=== ORDER SAVED TO SUPABASE ===", body);
+    }
+
+    // 2. Fetch Notification Settings dynamically from DB
+    const { data: settings } = await supabase.from('store_settings').select('*').eq('id', 1).single();
+
+    const botToken = settings?.telegram_bot_token;
+    const chatId = settings?.telegram_chat_id;
 
     if (!botToken || !chatId) {
-      console.warn("Telegram credentials not set. Add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to .env");
-      return NextResponse.json({ success: true, warning: 'Credentials missing, order logged to console only.' });
+      console.warn("Telegram credentials not set in Database.");
+      return NextResponse.json({ success: true, warning: 'Credentials missing in DB, order logged.' });
     }
 
     const message = `

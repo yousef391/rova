@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, DM_Sans } from "next/font/google";
 import Script from "next/script";
+import { supabase } from "@/lib/supabase";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -20,11 +21,20 @@ export const metadata: Metadata = {
     "Elevate your everyday with premium streetwear and tech-focused utility apparel. Lookbook and shop.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch dynamic settings from Supabase database
+  let pixelId = "000000000000";
+  try {
+    const { data } = await supabase.from('store_settings').select('fb_pixel_id').eq('id', 1).single();
+    if (data?.fb_pixel_id) pixelId = data.fb_pixel_id;
+  } catch (err) {
+    console.error("Error fetching FB Pixel from DB", err);
+  }
+
   return (
     <html lang="en">
       <head>
@@ -41,7 +51,7 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || "000000000000"}');
+              fbq('init', '${pixelId}');
               fbq('track', 'PageView');
             `,
           }}
@@ -55,7 +65,7 @@ export default function RootLayout({
             width="1"
             style={{ display: "none" }}
             alt=""
-            src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || '000000000000'}&ev=PageView&noscript=1`}
+            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
           />
         </noscript>
       </body>
