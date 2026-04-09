@@ -19,7 +19,7 @@ export default function SettingsPage() {
   useEffect(() => {
     async function loadSettings() {
       try {
-        const { data, error } = await supabase.from('store_settings').select('*').eq('id', 1).single();
+        const { data } = await supabase.from('store_settings').select('*').eq('id', 1).single();
         if (data) {
           setTelegramToken(data.telegram_bot_token || "");
           setTelegramChatId(data.telegram_chat_id || "");
