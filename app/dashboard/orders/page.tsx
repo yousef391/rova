@@ -72,7 +72,7 @@ export default function OrdersManagementPage() {
   // Yalidine Operations
   const [pushingId, setPushingId] = useState<string | null>(null);
   const [editingDispatchOrder, setEditingDispatchOrder] = useState<Order | null>(null);
-  const [dispatchData, setDispatchData] = useState<any>({});
+  const [dispatchData, setDispatchData] = useState<Record<string, unknown>>({});
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
@@ -158,9 +158,9 @@ export default function OrdersManagementPage() {
       
       setOrders(prev => prev.filter(o => o.id !== orderId));
       fetchOrders(); // Force refresh to be absolutely certain it's gone from UI
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(`Failed to delete order. Error: ${err.message || 'Unknown server error'}`);
+      alert(`Failed to delete order. Error: ${err instanceof Error ? err.message : 'Unknown server error'}`);
     } finally {
       setDeletingId(null);
     }
@@ -188,7 +188,7 @@ export default function OrdersManagementPage() {
     });
   };
 
-  const communesForWilaya = dispatchData.wilaya ? algeriaData.communes.filter((c: any) => c.wilaya_id.toString() === dispatchData.wilaya) : [];
+  const communesForWilaya = dispatchData.wilaya ? algeriaData.communes.filter((c: { wilaya_id: number; name: string }) => c.wilaya_id.toString() === dispatchData.wilaya) : [];
 
   const pushToYalidine = async () => {
     if (!editingDispatchOrder) return;
@@ -513,7 +513,7 @@ export default function OrdersManagementPage() {
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-black appearance-none cursor-pointer"
                   >
                     <option value="" disabled>Sélectionner Wilaya</option>
-                    {algeriaData.wilayas.map((w: any) => (
+                    {algeriaData.wilayas.map((w: { wilaya_id: number; wilaya_name_latin: string }) => (
                       <option key={w.wilaya_id} value={w.wilaya_id} className="text-black">{w.wilaya_id} - {w.wilaya_name_latin}</option>
                     ))}
                   </select>
@@ -527,7 +527,7 @@ export default function OrdersManagementPage() {
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-black appearance-none cursor-pointer disabled:opacity-50"
                   >
                     <option value="" disabled>Sélectionner Commune</option>
-                    {communesForWilaya.map((c: any) => (
+                    {communesForWilaya.map((c: { commune_id: number; commune_name_latin: string }) => (
                       <option key={c.commune_id} value={c.commune_name_latin} className="text-black">{c.commune_name_latin}</option>
                     ))}
                   </select>

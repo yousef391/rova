@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       wilayaId = parseInt(wilayaIdMatch[1], 10);
     } else {
       // Find by exact name mapping if override stripped ID
-      const foundEntry = Object.entries(YALIDINE_WILAYAS).find(([k, v]) => v.toLowerCase() === finalWilaya.toLowerCase().trim());
+      const foundEntry = Object.entries(YALIDINE_WILAYAS).find(([, v]) => v.toLowerCase() === finalWilaya.toLowerCase().trim());
       if (foundEntry) wilayaId = parseInt(foundEntry[0], 10);
     }
     const strictWilayaName = YALIDINE_WILAYAS[wilayaId] || finalWilaya.trim();
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
           // Normalize formatting to find the closest match (ignore spaces, hyphens, and case)
           const normalize = (str: string) => str.toLowerCase().replace(/[- ']/g, '');
           const orderCommuneNormalized = normalize(finalCommune);
-          const match = commData.data.find((c: any) => normalize(c.name) === orderCommuneNormalized);
+          const match = commData.data.find((c: { name: string }) => normalize(c.name) === orderCommuneNormalized);
           
           if (match) {
             strictCommuneName = match.name;
@@ -181,9 +181,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, tracking_id: trackingId, yalidine_label: result.label });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Yalidine Route Error:", err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -231,8 +231,8 @@ export async function DELETE(request: Request) {
     
     return NextResponse.json({ success: true, deleted: deletedRows });
     
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Yalidine Delete Route Error:", err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Internal Server Error' }, { status: 500 });
   }
 }
