@@ -9,7 +9,6 @@ import Image from "next/image";
 // Using pure Yalidine data and pre-discounted Delivery Fees!
 const JacketShowcase: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showForm, setShowForm] = useState(false);
   const [selectedSize, setSelectedSize] = useState("L");
   const [selectedWilaya, setSelectedWilaya] = useState("");
   const [selectedCommune, setSelectedCommune] = useState("");
@@ -83,7 +82,6 @@ const JacketShowcase: React.FC = () => {
         }
 
         setTimeout(() => {
-          setShowForm(false);
           setOrderSuccess(false);
         }, 3000);
       } else {
@@ -108,20 +106,6 @@ const JacketShowcase: React.FC = () => {
     },
     [currentIndex]
   );
-
-  const handleAddToCartClick = () => {
-    setShowForm(true);
-    type FBQ = (action: string, event: string, params?: Record<string, unknown>) => void;
-    if (typeof window !== "undefined" && (window as unknown as { fbq?: FBQ }).fbq) {
-      ((window as unknown as { fbq: FBQ }).fbq)('track', 'AddToCart', {
-        currency: 'DZD',
-        value: productPrice,
-        content_name: jacket.name,
-        content_category: jacket.productType,
-        content_type: 'product',
-      });
-    }
-  };
 
   return (
     <motion.div
@@ -260,9 +244,11 @@ const JacketShowcase: React.FC = () => {
                  className="flex flex-col gap-3 font-sans"
                  style={{ direction: "rtl" }}
                  onSubmit={(e) => {
+                   /* eslint-disable @typescript-eslint/no-explicit-any */
                    if (typeof window !== "undefined" && (window as any).fbq) {
                      (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
                    }
+                   /* eslint-enable @typescript-eslint/no-explicit-any */
                    handleOrderSubmit(e);
                  }}
                >
@@ -491,9 +477,11 @@ const JacketShowcase: React.FC = () => {
                 className="absolute bottom-0 right-0 w-[400px] flex flex-col gap-3 bg-white/10 p-6 rounded-[2rem] backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-50 overflow-hidden"
                 style={{ fontFamily: "var(--font-dm)", direction: "rtl" }}
                 onSubmit={(e) => {
+                   /* eslint-disable @typescript-eslint/no-explicit-any */
                    if (typeof window !== "undefined" && (window as any).fbq) {
                      (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
                    }
+                   /* eslint-enable @typescript-eslint/no-explicit-any */
                    handleOrderSubmit(e);
                  }}
               >
