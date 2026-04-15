@@ -25,7 +25,7 @@ const JacketShowcase: React.FC = () => {
   const deliveryPrice = selectedWilayaObj ? selectedWilayaObj.delivery_fee : 0;
   
   const singlePrice = parseFloat(jacket.price.replace(/[^\d]/g, ""));
-  const productPrice = selectedQuantity === 2 ? 10000 : singlePrice;
+  const productPrice = selectedQuantity === 2 ? 11800 : singlePrice;
   const totalPrice = productPrice + deliveryPrice;
 
   const navigate = useCallback((dir: number) => {
@@ -220,7 +220,7 @@ const JacketShowcase: React.FC = () => {
                     {productPrice.toLocaleString()} DA
                   </span>
                   {selectedQuantity === 2 && (
-                    <span className="text-amber-400 text-[10px] font-bold tracking-wide" style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA 🔥</span>
+                    <span className="text-amber-400 text-[10px] font-bold tracking-wide" style={{ fontFamily: "var(--font-dm)" }}>وفّر 1,800 DA 🔥</span>
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -259,8 +259,8 @@ const JacketShowcase: React.FC = () => {
                       <button type="button" onClick={() => setSelectedQuantity(2)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 rounded-[1.2rem] p-3 transition-all duration-300 border relative overflow-hidden ${selectedQuantity === 2 ? "bg-gradient-to-r from-amber-400 to-orange-500 text-black border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.4)]" : "bg-white/5 text-white border-white/10"}`}>
                         <span className="absolute -top-0 -right-0 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg rounded-tr-[1.1rem]">PROMO</span>
                         <span className="text-[13px] font-black" style={{ fontFamily: "var(--font-dm)" }}>2 قطع 🔥</span>
-                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>10,000 DA</span>
-                        <span className={`text-[9px] font-bold ${selectedQuantity === 2 ? "text-black/60" : "text-amber-400"}`} style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA</span>
+                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>11,800 DA</span>
+                        <span className={`text-[9px] font-bold ${selectedQuantity === 2 ? "text-black/60" : "text-amber-400"}`} style={{ fontFamily: "var(--font-dm)" }}>وفّر 1,800 DA</span>
                       </button>
                    </div>
                  </div>
@@ -458,7 +458,7 @@ const JacketShowcase: React.FC = () => {
             style={{ fontFamily: "var(--font-dm)" }}
           >
             <span className="text-xs font-bold">2 pcs 🔥</span>
-            <span className="text-[10px] font-bold opacity-70">10,000</span>
+            <span className="text-[10px] font-bold opacity-70">11,800</span>
           </button>
         </div>
       </div>
@@ -511,7 +511,7 @@ const JacketShowcase: React.FC = () => {
                 {productPrice.toLocaleString()} DA
               </span>
               {selectedQuantity === 2 && (
-                <span className="text-amber-400 text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA 🔥</span>
+                <span className="text-amber-400 text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-dm)" }}>وفّر 1,800 DA 🔥</span>
               )}
             </motion.div>
           </AnimatePresence>
