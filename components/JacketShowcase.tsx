@@ -10,10 +10,12 @@ import Image from "next/image";
 const JacketShowcase: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("L");
+  const [selectedQuantity, setSelectedQuantity] = useState<1 | 2>(1);
   const [selectedWilaya, setSelectedWilaya] = useState("");
   const [selectedCommune, setSelectedCommune] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [hasTrackedAddToCart, setHasTrackedAddToCart] = useState(false);
   const animating = useRef(false);
 
   const jacket = jackets[currentIndex];
@@ -22,7 +24,8 @@ const JacketShowcase: React.FC = () => {
   const selectedWilayaObj = algeriaData.wilayas.find((w: { wilaya_id: string; wilaya_name_latin: string }) => w.wilaya_id.toString() === selectedWilaya);
   const deliveryPrice = selectedWilayaObj ? selectedWilayaObj.delivery_fee : 0;
   
-  const productPrice = parseFloat(jacket.price.replace(/[^\d]/g, ""));
+  const singlePrice = parseFloat(jacket.price.replace(/[^\d]/g, ""));
+  const productPrice = selectedQuantity === 2 ? 10000 : singlePrice;
   const totalPrice = productPrice + deliveryPrice;
 
   const navigate = useCallback((dir: number) => {
@@ -60,7 +63,8 @@ const JacketShowcase: React.FC = () => {
           item: jacket.name,
           color: jacket.colorName,
           size: selectedSize,
-          price: jacket.price,
+          quantity: selectedQuantity,
+          price: `${productPrice.toLocaleString()} DA`,
           delivery: deliveryPrice,
           total: `${totalPrice.toLocaleString()} DA`
         })
@@ -204,15 +208,22 @@ const JacketShowcase: React.FC = () => {
              </div>
              
              <AnimatePresence mode="wait">
-               <motion.span
-                 key={`m-price-${jacket.id}`}
-                 initial={{ opacity: 0, x: 5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }}
-                 className="text-white text-[1.6rem] font-bold tracking-tight whitespace-nowrap pt-1"
-                 style={{ fontFamily: "var(--font-heading)" }}
-               >
-                 {jacket.price}
-               </motion.span>
-             </AnimatePresence>
+                <motion.div
+                  key={`m-price-${jacket.id}-${selectedQuantity}`}
+                  initial={{ opacity: 0, x: 5 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -5 }}
+                  className="flex flex-col items-end pt-1"
+                >
+                  {selectedQuantity === 2 && (
+                    <span className="text-white/40 text-[0.85rem] line-through" style={{ fontFamily: "var(--font-dm)" }}>13,600 DA</span>
+                  )}
+                  <span className="text-white text-[1.6rem] font-bold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-heading)" }}>
+                    {productPrice.toLocaleString()} DA
+                  </span>
+                  {selectedQuantity === 2 && (
+                    <span className="text-amber-400 text-[10px] font-bold tracking-wide" style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA 🔥</span>
+                  )}
+                </motion.div>
+              </AnimatePresence>
            </div>
 
            {/* Variants & Buy Now */}
@@ -228,7 +239,7 @@ const JacketShowcase: React.FC = () => {
                  </div>
                  
                  <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded-[1.2rem] p-3.5 shadow-inner backdrop-blur-sm">
-                   <span className="text-white/60 text-[11px] uppercase tracking-widest font-bold font-dm">Size</span   >
+                   <span className="text-white/60 text-[11px] uppercase tracking-widest font-bold font-dm">Size</span>
                    <div className="flex gap-2">
                       {["S", "M", "L", "XL"].map((s) => (
                          <button key={s} type="button" onClick={() => setSelectedSize(s)} className={`w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black transition-all duration-300 ${selectedSize === s ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]" : "bg-white/10 text-white"}`} style={{ fontFamily: "var(--font-dm)" }}>
@@ -238,19 +249,28 @@ const JacketShowcase: React.FC = () => {
                    </div>
                  </div>
 
+                 <div className="flex flex-col gap-2">
+                   <span className="text-white/60 text-[11px] uppercase tracking-widest font-bold font-dm px-1">الكمية</span>
+                   <div className="flex gap-2">
+                      <button type="button" onClick={() => setSelectedQuantity(1)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 rounded-[1.2rem] p-3 transition-all duration-300 border ${selectedQuantity === 1 ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "bg-white/5 text-white border-white/10"}`}>
+                        <span className="text-[13px] font-black" style={{ fontFamily: "var(--font-dm)" }}>1 قطعة</span>
+                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>6,800 DA</span>
+                      </button>
+                      <button type="button" onClick={() => setSelectedQuantity(2)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 rounded-[1.2rem] p-3 transition-all duration-300 border relative overflow-hidden ${selectedQuantity === 2 ? "bg-gradient-to-r from-amber-400 to-orange-500 text-black border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.4)]" : "bg-white/5 text-white border-white/10"}`}>
+                        <span className="absolute -top-0 -right-0 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg rounded-tr-[1.1rem]">PROMO</span>
+                        <span className="text-[13px] font-black" style={{ fontFamily: "var(--font-dm)" }}>2 قطع 🔥</span>
+                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>10,000 DA</span>
+                        <span className={`text-[9px] font-bold ${selectedQuantity === 2 ? "text-black/60" : "text-amber-400"}`} style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA</span>
+                      </button>
+                   </div>
+                 </div>
+
                <motion.form
                  initial={{ opacity: 0, y: 20 }}
                  animate={{ opacity: 1, y: 0 }}
                  className="flex flex-col gap-3 font-sans"
                  style={{ direction: "rtl" }}
-                 onSubmit={(e) => {
-                   /* eslint-disable @typescript-eslint/no-explicit-any */
-                   if (typeof window !== "undefined" && (window as any).fbq) {
-                     (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
-                   }
-                   /* eslint-enable @typescript-eslint/no-explicit-any */
-                   handleOrderSubmit(e);
-                 }}
+                 onSubmit={handleOrderSubmit}
                >
                  <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-xl border border-white/10 mt-1 shadow-2xl flex flex-col gap-3">
                    <h3 className="text-white font-black uppercase tracking-tight text-lg mb-1 hidden" style={{ fontFamily: "var(--font-heading)" }}>تأكيد الطلبية</h3>
@@ -260,7 +280,18 @@ const JacketShowcase: React.FC = () => {
                      <select 
                        required 
                        value={selectedWilaya} 
-                       onChange={e => { setSelectedWilaya(e.target.value); setSelectedCommune(""); }}
+                       onChange={e => { 
+                         setSelectedWilaya(e.target.value); 
+                         setSelectedCommune(""); 
+                         if (!hasTrackedAddToCart) {
+                           setHasTrackedAddToCart(true);
+                           /* eslint-disable @typescript-eslint/no-explicit-any */
+                           if (typeof window !== "undefined" && (window as any).fbq) {
+                             (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
+                           }
+                           /* eslint-enable @typescript-eslint/no-explicit-any */
+                         }
+                       }}
                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none"
                      >
                        <option value="" disabled className="text-black">اختر الولاية</option>
@@ -287,10 +318,10 @@ const JacketShowcase: React.FC = () => {
                    </div>
                  
                    {/* Order Summary */}
-                   <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1 mt-1 font-sans">
-                     <div className="flex justify-between text-white/70 text-xs">
-                       <span>المجموع (المقاس: {selectedSize})</span>
-                       <span dir="ltr">{jacket.price}</span>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1 mt-1 font-sans">
+                      <div className="flex justify-between text-white/70 text-xs">
+                        <span>المجموع ({selectedQuantity} قطعة - المقاس: {selectedSize})</span>
+                        <span dir="ltr">{productPrice.toLocaleString()} DA</span>
                      </div>
                      <div className="flex justify-between text-white/70 text-xs">
                        <span>التوصيل</span>
@@ -410,6 +441,26 @@ const JacketShowcase: React.FC = () => {
             </button>
           ))}
         </div>
+        {/* Quantity — Desktop */}
+        <div className="flex flex-col gap-3 items-end">
+          <span className="text-white/60 text-xs uppercase tracking-[0.2em] font-bold" style={{ fontFamily: "var(--font-heading)" }}>Qty</span>
+          <button
+            onClick={() => setSelectedQuantity(1)}
+            className={`h-auto px-3 py-2 rounded-xl flex flex-col items-center justify-center transition-all ${selectedQuantity === 1 ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/20"}`}
+            style={{ fontFamily: "var(--font-dm)" }}
+          >
+            <span className="text-xs font-bold">1 pc</span>
+            <span className="text-[10px] font-bold opacity-70">6,800</span>
+          </button>
+          <button
+            onClick={() => setSelectedQuantity(2)}
+            className={`h-auto px-3 py-2 rounded-xl flex flex-col items-center justify-center transition-all relative ${selectedQuantity === 2 ? "bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_0_15px_rgba(251,191,36,0.4)]" : "bg-white/10 text-white hover:bg-white/20"}`}
+            style={{ fontFamily: "var(--font-dm)" }}
+          >
+            <span className="text-xs font-bold">2 pcs 🔥</span>
+            <span className="text-[10px] font-bold opacity-70">10,000</span>
+          </button>
+        </div>
       </div>
 
       {/* Bottom bar — desktop */}
@@ -445,17 +496,24 @@ const JacketShowcase: React.FC = () => {
         {/* Price + arrows */}
         <div className="flex flex-col items-center gap-3">
           <AnimatePresence mode="wait">
-            <motion.span
-              key={`d-price-${jacket.id}`}
+            <motion.div
+              key={`d-price-${jacket.id}-${selectedQuantity}`}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
-              className="text-white text-3xl font-bold tracking-tight"
-              style={{ fontFamily: "var(--font-heading)" }}
+              className="flex flex-col items-center"
             >
-              {jacket.price}
-            </motion.span>
+              {selectedQuantity === 2 && (
+                <span className="text-white/40 text-sm line-through" style={{ fontFamily: "var(--font-dm)" }}>13,600 DA</span>
+              )}
+              <span className="text-white text-3xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+                {productPrice.toLocaleString()} DA
+              </span>
+              {selectedQuantity === 2 && (
+                <span className="text-amber-400 text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-dm)" }}>وفّر 3,600 DA 🔥</span>
+              )}
+            </motion.div>
           </AnimatePresence>
           <div className="flex items-center gap-3">
             <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
@@ -476,14 +534,7 @@ const JacketShowcase: React.FC = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 className="absolute bottom-0 right-0 w-[400px] flex flex-col gap-3 bg-white/10 p-6 rounded-[2rem] backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-50 overflow-hidden"
                 style={{ fontFamily: "var(--font-dm)", direction: "rtl" }}
-                onSubmit={(e) => {
-                   /* eslint-disable @typescript-eslint/no-explicit-any */
-                   if (typeof window !== "undefined" && (window as any).fbq) {
-                     (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
-                   }
-                   /* eslint-enable @typescript-eslint/no-explicit-any */
-                   handleOrderSubmit(e);
-                 }}
+                onSubmit={handleOrderSubmit}
               >
                 {/* Glow behind form */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-[-1]" />
@@ -495,7 +546,18 @@ const JacketShowcase: React.FC = () => {
                   <select 
                     required 
                     value={selectedWilaya} 
-                    onChange={e => { setSelectedWilaya(e.target.value); setSelectedCommune(""); }}
+                    onChange={e => { 
+                      setSelectedWilaya(e.target.value); 
+                      setSelectedCommune(""); 
+                      if (!hasTrackedAddToCart) {
+                        setHasTrackedAddToCart(true);
+                        /* eslint-disable @typescript-eslint/no-explicit-any */
+                        if (typeof window !== "undefined" && (window as any).fbq) {
+                          (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
+                        }
+                        /* eslint-enable @typescript-eslint/no-explicit-any */
+                      }
+                    }}
                     className="w-[45%] bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/50 transition-colors appearance-none cursor-pointer text-base"
                   >
                     <option value="" disabled className="text-black">1. الولاية</option>
@@ -524,8 +586,8 @@ const JacketShowcase: React.FC = () => {
                 {/* Order Summary */}
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2 mt-1 font-sans relative z-10">
                   <div className="flex justify-between text-white/70 text-sm">
-                    <span>المجموع (المقاس: {selectedSize})</span>
-                    <span dir="ltr">{jacket.price}</span>
+                    <span>المجموع ({selectedQuantity} قطعة - المقاس: {selectedSize})</span>
+                    <span dir="ltr">{productPrice.toLocaleString()} DA</span>
                   </div>
                   <div className="flex justify-between text-white/70 text-sm">
                     <span>التوصيل</span>

@@ -4,13 +4,13 @@ import { supabase } from '@/lib/supabase';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, wilaya, commune, item, color, size, price, delivery, total } = body;
+    const { name, phone, wilaya, commune, item, color, size, quantity, price, delivery, total } = body;
 
     // 1. Insert into Supabase Orders Table
     const { error: dbError } = await supabase
       .from('orders')
       .insert([
-        { name, phone, wilaya, commune, item, color, size, price, delivery, total, status: 'new' }
+        { name, phone, wilaya, commune, item, color, size, quantity: quantity || 1, price, delivery, total, status: 'new' }
       ]);
 
     if (dbError) {
@@ -38,6 +38,7 @@ export async function POST(request: Request) {
 📍 *Location*: ${wilaya} - ${commune}
 
 👕 *Item*: ${item} (${color})
+📦 *Quantity*: ${quantity || 1} piece(s)
 📏 *Size*: ${size}
 
 💰 *Product*: ${price}
