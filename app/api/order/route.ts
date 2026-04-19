@@ -15,9 +15,9 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error("Supabase Error:", dbError);
-    } else {
-      console.log("=== ORDER SAVED TO SUPABASE ===", body);
+      return NextResponse.json({ error: "Failed to save order to database." }, { status: 500 });
     }
+    console.log("=== ORDER SAVED TO SUPABASE ===", body);
 
     // 2. Fetch Notification Settings dynamically from DB
     const { data: settings } = await supabase.from('store_settings').select('*').eq('id', 1).single();
