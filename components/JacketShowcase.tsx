@@ -84,10 +84,6 @@ const JacketShowcase: React.FC = () => {
             content_type: 'product',
           });
         }
-
-        setTimeout(() => {
-          setOrderSuccess(false);
-        }, 3000);
       } else {
         alert("Failed to place order. Please try again.");
       }
@@ -609,6 +605,165 @@ const JacketShowcase: React.FC = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* ────── SUCCESS DIALOG ────── */}
+      <AnimatePresence>
+        {orderSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            onClick={() => setOrderSuccess(false)}
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            />
+
+            {/* Floating particles */}
+            {Array.from({ length: 20 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{
+                  opacity: 0,
+                  scale: 0,
+                  x: 0,
+                  y: 0
+                }}
+                animate={{
+                  opacity: [0, 1, 1, 0],
+                  scale: [0, 1, 1, 0.5],
+                  x: (Math.random() - 0.5) * 400,
+                  y: (Math.random() - 0.5) * 600 - 100
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 1.5,
+                  delay: Math.random() * 0.5,
+                  ease: "easeOut"
+                }}
+                className="absolute pointer-events-none"
+                style={{
+                  width: 6 + Math.random() * 10,
+                  height: 6 + Math.random() * 10,
+                  borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                  backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f472b6', '#a78bfa', '#fb923c'][Math.floor(Math.random() * 6)],
+                  rotate: Math.random() * 360
+                }}
+              />
+            ))}
+
+            {/* Dialog Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.7, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 22, delay: 0.1 }}
+              className="relative z-10 bg-white rounded-[2.5rem] w-full max-w-sm p-8 flex flex-col items-center text-center shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Background glow */}
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-green-200 rounded-full blur-3xl opacity-50" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-200 rounded-full blur-3xl opacity-50" />
+
+              {/* Animated checkmark circle */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.3 }}
+                className="relative w-24 h-24 mb-6"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full shadow-lg shadow-green-500/30" />
+                <motion.svg
+                  viewBox="0 0 24 24"
+                  className="absolute inset-0 w-full h-full p-6"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <motion.path
+                    d="M5 13l4 4L19 7"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+                  />
+                </motion.svg>
+                {/* Pulse ring */}
+                <motion.div
+                  initial={{ scale: 1, opacity: 0.5 }}
+                  animate={{ scale: 1.8, opacity: 0 }}
+                  transition={{ duration: 1.5, delay: 0.5, repeat: Infinity, repeatDelay: 1 }}
+                  className="absolute inset-0 bg-green-400 rounded-full"
+                />
+              </motion.div>
+
+              {/* Title */}
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="text-2xl font-black text-gray-900 mb-2"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                تم الطلب بنجاح
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="text-gray-500 text-sm mb-6 leading-relaxed"
+                style={{ fontFamily: "var(--font-dm)" }}
+              >
+                شكراً لك! سيتم التواصل معك قريباً لتأكيد الطلبية.
+              </motion.p>
+
+              {/* Order summary card */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="w-full bg-gray-50 rounded-2xl p-5 mb-6 border border-gray-100"
+              >
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
+                  </div>
+                  <div className="text-left" dir="ltr">
+                    <p className="text-sm font-bold text-gray-900" style={{ fontFamily: "var(--font-dm)" }}>{jacket.name}</p>
+                    <p className="text-xs text-gray-500">{jacket.colorName} • {selectedSize} • {selectedQuantity}x</p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 font-medium">المبلغ الإجمالي</span>
+                  <span className="text-lg font-black text-gray-900" style={{ fontFamily: "var(--font-heading)" }} dir="ltr">
+                    {totalPrice.toLocaleString()} DA
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* Close button */}
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                onClick={() => setOrderSuccess(false)}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 text-white font-bold text-sm tracking-wide shadow-lg shadow-gray-900/20 active:scale-[0.98] transition-transform"
+                style={{ fontFamily: "var(--font-dm)" }}
+              >
+                حسناً
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 };

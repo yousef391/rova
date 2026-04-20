@@ -127,6 +127,12 @@ export async function POST(request: Request) {
     // Determine the string to use for Yalidine's order_id tracker
     const referenceId = order.order_number ? order.order_number.toString() : order.id.toString();
 
+    // Build product description for Yalidine
+    let productDescription = `${order.item} (${order.color}, ${order.size})`;
+    if (overrides?.autorisation_ouverture) {
+      productDescription += ` - Autorisation d'ouverture: OUI`;
+    }
+
     const yalidinePayload = [
       {
         order_id: referenceId,
@@ -137,7 +143,7 @@ export async function POST(request: Request) {
         address: finalAddress,
         to_commune_name: strictCommuneName,
         to_wilaya_name: strictWilayaName,
-        product_list: `${order.item} (${order.color}, ${order.size})`,
+        product_list: productDescription,
         price: priceNumber,
         do_insurance: overrides?.do_insurance !== undefined ? overrides.do_insurance : true,
         declared_value: overrides?.declared_value !== undefined ? overrides.declared_value : priceNumber,

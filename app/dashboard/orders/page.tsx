@@ -185,7 +185,8 @@ export default function OrdersManagementPage() {
       declared_value: parseInt(order.price.replace(/[^\d]/g, ''), 10) || 0,
       weight: 1, // Default 1
       is_stopdesk: false,
-      stopdesk_id: ""
+      stopdesk_id: "",
+      autorisation_ouverture: false
     });
   };
 
@@ -625,6 +626,25 @@ export default function OrdersManagementPage() {
                   <p className="text-[10px] text-orange-600 mt-1">Check Yalidine Dashboard for exact Center IDs.</p>
                 </div>
               )}
+
+              {/* Autorisation d'ouverture */}
+              <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-4 mt-2">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">Autorisation d&apos;ouverture</label>
+                  <p className="text-[10px] text-gray-500 mt-0.5">Le client peut ouvrir le colis avant paiement.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDispatchData({...dispatchData, autorisation_ouverture: !dispatchData.autorisation_ouverture})}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${
+                    dispatchData.autorisation_ouverture ? 'bg-green-500' : 'bg-gray-300'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-200 ${
+                    dispatchData.autorisation_ouverture ? 'translate-x-5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
             </div>
 
             <div className="mt-8 flex justify-end gap-3">
