@@ -7,7 +7,7 @@ export const jackets: Jacket[] = [
     fill1: "#111111",
     fill2: "#1a1a1a",
     fill3: "#050505",
-    price: "6,800 DA",
+    price: "5,400 DA",
     bg: "#050505",
     tag: "Full Black",
     swatch: "#111111",

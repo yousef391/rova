@@ -1,6 +1,6 @@
 "use client";
 
-import { Save, Shield, Webhook, Link2 } from 'lucide-react';
+import { Save, Shield, Webhook, Link2, DollarSign, Truck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -16,6 +16,18 @@ export default function SettingsPage() {
   const [yalidineApiId, setYalidineApiId] = useState("");
   const [yalidineApiToken, setYalidineApiToken] = useState("");
 
+  // Pricing
+  const [singlePrice, setSinglePrice] = useState(5400);
+  const [bundlePrice, setBundlePrice] = useState(8200);
+
+  // Zone delivery pricing
+  const [zone0, setZone0] = useState(590);
+  const [zone1, setZone1] = useState(700);
+  const [zone2, setZone2] = useState(900);
+  const [zone3, setZone3] = useState(950);
+  const [zone4, setZone4] = useState(1050);
+  const [zone5, setZone5] = useState(1600);
+
   useEffect(() => {
     async function loadSettings() {
       try {
@@ -26,6 +38,14 @@ export default function SettingsPage() {
           setFbPixelId(data.fb_pixel_id || "");
           setYalidineApiId(data.yalidine_api_id || "");
           setYalidineApiToken(data.yalidine_api_token || "");
+          setSinglePrice(data.single_price ?? 5400);
+          setBundlePrice(data.bundle_price ?? 8200);
+          setZone0(data.zone_0_price ?? 590);
+          setZone1(data.zone_1_price ?? 700);
+          setZone2(data.zone_2_price ?? 900);
+          setZone3(data.zone_3_price ?? 950);
+          setZone4(data.zone_4_price ?? 1050);
+          setZone5(data.zone_5_price ?? 1600);
         }
       } catch (err) {
         console.error("Error loading settings:", err);
@@ -48,12 +68,28 @@ export default function SettingsPage() {
           telegram_chat_id: telegramChatId,
           fb_pixel_id: fbPixelId,
           yalidine_api_id: yalidineApiId,
-          yalidine_api_token: yalidineApiToken
+          yalidine_api_token: yalidineApiToken,
+          single_price: singlePrice,
+          bundle_price: bundlePrice,
+          zone_0_price: zone0,
+          zone_1_price: zone1,
+          zone_2_price: zone2,
+          zone_3_price: zone3,
+          zone_4_price: zone4,
+          zone_5_price: zone5
         })
         .eq('id', 1);
 
       if (error) throw error;
-      alert("Settings saved successfully to Database!");
+      
+      // Tell Next.js to purge the edge cache so the storefront updates instantly
+      await fetch('/api/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: '/' })
+      });
+
+      alert("Settings saved! The website has been updated instantly.");
     } catch (err) {
       console.error("Error saving settings:", err);
       alert("Failed to save settings.");
@@ -207,6 +243,96 @@ export default function SettingsPage() {
                 </div>
                 <span className="text-xs text-gray-400">Keep this token secure!</span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Pricing Card */}
+        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+          <div className="p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600">
+                <DollarSign size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Product Pricing</h3>
+                <p className="text-gray-500 text-sm">Set the prices displayed on the storefront. Changes apply instantly after save.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold text-gray-700">Single Piece Price</label>
+                <div className="relative">
+                  <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input 
+                    type="number" 
+                    value={singlePrice}
+                    onChange={(e) => setSinglePrice(parseInt(e.target.value) || 0)}
+                    placeholder="5400"
+                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-16 py-3 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
+                </div>
+                <span className="text-xs text-gray-400">Price for 1 piece ("1 قطعة").</span>
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold text-gray-700">Bundle Price (2 Pieces)</label>
+                <div className="relative">
+                  <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input 
+                    type="number" 
+                    value={bundlePrice}
+                    onChange={(e) => setBundlePrice(parseInt(e.target.value) || 0)}
+                    placeholder="8200"
+                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-16 py-3 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
+                </div>
+                <span className="text-xs text-gray-400">Promo price for 2 pieces ("2 قطع"). Savings: <strong className="text-emerald-600">{((singlePrice * 2) - bundlePrice).toLocaleString()} DA</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivery Zone Pricing Card */}
+        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+          <div className="p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-600">
+                <Truck size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Delivery Pricing by Zone</h3>
+                <p className="text-gray-500 text-sm">Set delivery fees per zone. Each wilaya is assigned to a zone.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { label: 'Zone 0 — Oran', value: zone0, set: setZone0, color: 'emerald' },
+                { label: 'Zone 1 — Alger, SBA, Mosta, Mascara, A.T.', value: zone1, set: setZone1, color: 'blue' },
+                { label: 'Zone 2 — Nord / Hauts Plateaux', value: zone2, set: setZone2, color: 'indigo' },
+                { label: 'Zone 3 — Sud proche', value: zone3, set: setZone3, color: 'amber' },
+                { label: 'Zone 4 — Sud lointain', value: zone4, set: setZone4, color: 'orange' },
+                { label: 'Zone 5 — Grand Sud', value: zone5, set: setZone5, color: 'red' },
+              ].map((z) => (
+                <div key={z.label} className="flex flex-col gap-1.5 bg-[#F4F7FE] rounded-xl p-4">
+                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-tight">{z.label}</label>
+                  <div className="relative">
+                    <input 
+                      type="number" 
+                      value={z.value}
+                      onChange={(e) => z.set(parseInt(e.target.value) || 0)}
+                      className="w-full bg-white border border-gray-200 rounded-lg pl-3 pr-12 py-2 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

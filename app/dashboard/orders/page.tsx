@@ -173,6 +173,10 @@ export default function OrdersManagementPage() {
     // Attempt to extract the default wilaya ID from the string "16 - Alger"
     const wilayaMatch = order.wilaya.match(/^(\d+)/);
     const defaultWilayaId = wilayaMatch ? wilayaMatch[1] : "";
+    
+    // Parse the base product price and automatically reduce it by 200 DA
+    const originalPrice = parseInt(order.price.replace(/[^\d]/g, ''), 10) || 0;
+    const reducedPrice = Math.max(0, originalPrice - 200);
 
     setDispatchData({
       name: order.name,
@@ -180,9 +184,9 @@ export default function OrdersManagementPage() {
       wilaya: defaultWilayaId || order.wilaya,
       commune: order.commune,
       address: order.commune || "", 
-      price: parseInt(order.price.replace(/[^\d]/g, ''), 10) || 0, // ONLY PRODUCT PRICE
+      price: reducedPrice, // Product price reduced by 200 DA
       do_insurance: true, // Default true
-      declared_value: parseInt(order.price.replace(/[^\d]/g, ''), 10) || 0,
+      declared_value: reducedPrice, // Also reduced
       weight: 1, // Default 1
       is_stopdesk: false,
       stopdesk_id: "",

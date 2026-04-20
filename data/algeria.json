@@ -3,292 +3,292 @@
     {
       "wilaya_id": "1",
       "wilaya_name_latin": "Adrar",
-      "delivery_fee": 850
+      "zone": 4
     },
     {
       "wilaya_id": "2",
       "wilaya_name_latin": "Chlef",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "3",
       "wilaya_name_latin": "Laghouat",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "4",
       "wilaya_name_latin": "Oum El Bouaghi",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "5",
       "wilaya_name_latin": "Batna",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "6",
       "wilaya_name_latin": "Béjaïa",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "7",
       "wilaya_name_latin": "Biskra",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "8",
       "wilaya_name_latin": "Béchar",
-      "delivery_fee": 850
+      "zone": 3
     },
     {
       "wilaya_id": "9",
       "wilaya_name_latin": "Blida",
-      "delivery_fee": 500
+      "zone": 2
     },
     {
       "wilaya_id": "10",
       "wilaya_name_latin": "Bouira",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "11",
       "wilaya_name_latin": "Tamanrasset",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "12",
       "wilaya_name_latin": "Tébessa",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "13",
       "wilaya_name_latin": "Tlemcen",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "14",
       "wilaya_name_latin": "Tiaret",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "15",
       "wilaya_name_latin": "Tizi Ouzou",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "16",
       "wilaya_name_latin": "Alger",
-      "delivery_fee": 500
+      "zone": 1
     },
     {
       "wilaya_id": "17",
       "wilaya_name_latin": "Djelfa",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "18",
       "wilaya_name_latin": "Jijel",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "19",
       "wilaya_name_latin": "Sétif",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "20",
       "wilaya_name_latin": "Saïda",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "21",
       "wilaya_name_latin": "Skikda",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "22",
       "wilaya_name_latin": "Sidi Bel Abbès",
-      "delivery_fee": 700
+      "zone": 1
     },
     {
       "wilaya_id": "23",
       "wilaya_name_latin": "Annaba",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "24",
       "wilaya_name_latin": "Guelma",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "25",
       "wilaya_name_latin": "Constantine",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "26",
       "wilaya_name_latin": "Médéa",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "27",
       "wilaya_name_latin": "Mostaganem",
-      "delivery_fee": 700
+      "zone": 1
     },
     {
       "wilaya_id": "28",
       "wilaya_name_latin": "M'Sila",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "29",
       "wilaya_name_latin": "Mascara",
-      "delivery_fee": 700
+      "zone": 1
     },
     {
       "wilaya_id": "30",
       "wilaya_name_latin": "Ouargla",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "31",
       "wilaya_name_latin": "Oran",
-      "delivery_fee": 390
+      "zone": 0
     },
     {
       "wilaya_id": "32",
       "wilaya_name_latin": "El Bayadh",
-      "delivery_fee": 850
+      "zone": 4
     },
     {
       "wilaya_id": "33",
       "wilaya_name_latin": "Illizi",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "34",
       "wilaya_name_latin": "Bordj Bou Arreridj",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "35",
       "wilaya_name_latin": "Boumerdès",
-      "delivery_fee": 500
+      "zone": 2
     },
     {
       "wilaya_id": "36",
       "wilaya_name_latin": "El Tarf",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "37",
       "wilaya_name_latin": "Tindouf",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "38",
       "wilaya_name_latin": "Tissemsilt",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "39",
       "wilaya_name_latin": "El Oued",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "40",
       "wilaya_name_latin": "Khenchela",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "41",
       "wilaya_name_latin": "Souk Ahras",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "42",
       "wilaya_name_latin": "Tipaza",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "43",
       "wilaya_name_latin": "Mila",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "44",
       "wilaya_name_latin": "Aïn Defla",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "45",
       "wilaya_name_latin": "Naâma",
-      "delivery_fee": 850
+      "zone": 4
     },
     {
       "wilaya_id": "46",
       "wilaya_name_latin": "Aïn Témouchent",
-      "delivery_fee": 700
+      "zone": 1
     },
     {
       "wilaya_id": "47",
       "wilaya_name_latin": "Ghardaïa",
-      "delivery_fee": 750
+      "zone": 3
     },
     {
       "wilaya_id": "48",
       "wilaya_name_latin": "Relizane",
-      "delivery_fee": 700
+      "zone": 2
     },
     {
       "wilaya_id": "49",
       "wilaya_name_latin": "Timimoun",
-      "delivery_fee": 850
+      "zone": 4
     },
     {
       "wilaya_id": "50",
       "wilaya_name_latin": "Bordj Badji Mokhtar",
-      "delivery_fee": 850
+      "zone": 4
     },
     {
       "wilaya_id": "51",
       "wilaya_name_latin": "Ouled Djellal",
-      "delivery_fee": 850
+      "zone": 3
     },
     {
       "wilaya_id": "52",
       "wilaya_name_latin": "Béni Abbès",
-      "delivery_fee": 850
+      "zone": 3
     },
     {
       "wilaya_id": "53",
       "wilaya_name_latin": "In Salah",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "54",
       "wilaya_name_latin": "In Guezzam",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "55",
       "wilaya_name_latin": "Touggourt",
-      "delivery_fee": 850
+      "zone": 3
     },
     {
       "wilaya_id": "56",
       "wilaya_name_latin": "Djanet",
-      "delivery_fee": 850
+      "zone": 5
     },
     {
       "wilaya_id": "57",
       "wilaya_name_latin": "El M'Ghair",
-      "delivery_fee": 850
+      "zone": 3
     },
     {
       "wilaya_id": "58",
       "wilaya_name_latin": "El Menia",
-      "delivery_fee": 850
+      "zone": 3
     }
   ],
   "communes": [
