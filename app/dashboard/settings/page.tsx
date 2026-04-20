@@ -275,7 +275,7 @@ export default function SettingsPage() {
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
                 </div>
-                <span className="text-xs text-gray-400">Price for 1 piece ("1 قطعة").</span>
+                <span className="text-xs text-gray-400">Price for 1 piece (&quot;1 قطعة&quot;).</span>
               </div>
               
               <div className="flex flex-col gap-2">
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
                 </div>
-                <span className="text-xs text-gray-400">Promo price for 2 pieces ("2 قطع"). Savings: <strong className="text-emerald-600">{((singlePrice * 2) - bundlePrice).toLocaleString()} DA</strong></span>
+                <span className="text-xs text-gray-400">Promo price for 2 pieces (&quot;2 قطع&quot;). Savings: <strong className="text-emerald-600">{((singlePrice * 2) - bundlePrice).toLocaleString()} DA</strong></span>
               </div>
             </div>
           </div>

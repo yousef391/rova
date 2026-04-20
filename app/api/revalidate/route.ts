@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ revalidated: false, message: 'Missing path' }, { status: 400 });
   } catch (err) {
+    console.error("Revalidate Error:", err);
     return NextResponse.json({ revalidated: false, message: 'Error revalidating' }, { status: 500 });
   }
 }
