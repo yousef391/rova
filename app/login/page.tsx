@@ -39,14 +39,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid items-center justify-center p-6 bg-[#f4f7fe]">
-      <div className="w-full max-w-md bg-white p-8 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+    <div className="min-h-screen grid items-center justify-center p-6 bg-[#0a0d14]">
+      <div className="w-full max-w-md bg-[#141720] p-8 rounded-2xl border border-white/5">
         
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
-            <Lock className="text-blue-600 w-8 h-8" />
+          <div className="w-16 h-16 bg-blue-600/15 rounded-2xl flex items-center justify-center mb-4">
+            <Lock className="text-blue-400 w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>
+          <h1 className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: "var(--font-heading)" }}>
             Admin Login
           </h1>
           <p className="text-sm tracking-wide text-gray-500 font-medium mt-1">
@@ -55,7 +55,7 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-sm font-bold text-red-600 tracking-wide text-center">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm font-bold text-red-400 tracking-wide text-center">
             {error}
           </div>
         )}
@@ -70,7 +70,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-gray-50 pl-11 pr-4 py-4 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 border border-transparent transition-all outline-none"
+                className="w-full bg-white/5 border border-white/10 pl-11 pr-4 py-4 rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-gray-600"
                 placeholder="admin@example.com"
               />
             </div>
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-gray-50 pl-11 pr-4 py-4 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 border border-transparent transition-all outline-none"
+                className="w-full bg-white/5 border border-white/10 pl-11 pr-4 py-4 rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-gray-600"
                 placeholder="••••••••"
               />
             </div>

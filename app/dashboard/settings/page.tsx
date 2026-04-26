@@ -107,17 +107,17 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto" style={{ fontFamily: "var(--font-dm)" }}>
+    <div className="flex flex-col gap-5 lg:gap-8 w-full max-w-4xl mx-auto" style={{ fontFamily: "var(--font-dm)" }}>
       
       <div className="flex flex-col">
-        <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>System Settings</h2>
-        <p className="text-gray-500 mt-1">Manage your integrations, API keys, and environment variables securely from the database.</p>
+        <h2 className="text-xl lg:text-2xl font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>System Settings</h2>
+        <p className="text-gray-500 mt-1 text-sm">Manage your integrations, API keys, and environment variables securely from the database.</p>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-6">
         
         {/* Telegram Integration Card */}
-        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+        <div className="bg-[#141720] rounded-2xl border border-white/5 overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1 h-full bg-[#2AABEE]"></div>
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -125,14 +125,14 @@ export default function SettingsPage() {
                 <Webhook size={20} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Telegram Notifications</h3>
+                <h3 className="font-bold text-lg text-white" style={{ fontFamily: "var(--font-heading)" }}>Telegram Notifications</h3>
                 <p className="text-gray-500 text-sm">Configure where new orders are sent.</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">Bot Token</label>
+                <label className="text-sm font-bold text-gray-400">Bot Token</label>
                 <div className="relative">
                   <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -140,14 +140,14 @@ export default function SettingsPage() {
                     value={telegramToken}
                     onChange={(e) => setTelegramToken(e.target.value)}
                     placeholder="Enter Bot Token"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-4 py-3 text-gray-900 text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <span className="text-xs text-gray-400">Provided by @BotFather.</span>
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">Chat ID</label>
+                <label className="text-sm font-bold text-gray-400">Chat ID</label>
                 <div className="relative">
                   <Link2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -155,7 +155,7 @@ export default function SettingsPage() {
                     value={telegramChatId}
                     onChange={(e) => setTelegramChatId(e.target.value)}
                     placeholder="-100123456789"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-4 py-3 text-gray-900 text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <span className="text-xs text-gray-400">The channel or user ID where orders go.</span>
@@ -165,7 +165,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Facebook Pixel Card */}
-        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+        <div className="bg-[#141720] rounded-2xl border border-white/5 overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1 h-full bg-[#1877F2]"></div>
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -175,14 +175,14 @@ export default function SettingsPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Facebook Pixel</h3>
+                <h3 className="font-bold text-lg text-white" style={{ fontFamily: "var(--font-heading)" }}>Facebook Pixel</h3>
                 <p className="text-gray-500 text-sm">Track conversions, Add to Cart, and Purchases.</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">Pixel ID (Database value)</label>
+                <label className="text-sm font-bold text-gray-400">Pixel ID (Database value)</label>
                 <div className="relative">
                   <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -190,7 +190,7 @@ export default function SettingsPage() {
                     value={fbPixelId}
                     onChange={(e) => setFbPixelId(e.target.value)}
                     placeholder="Enter Pixel ID"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-4 py-3 text-gray-900 text-sm font-mono focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <span className="text-xs text-gray-400">Dynamically used across all customer-facing pages.</span>
@@ -200,7 +200,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Yalidine Delivery API Card */}
-        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+        <div className="bg-[#141720] rounded-2xl border border-white/5 overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1 h-full bg-[#e11d48]"></div>
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -208,14 +208,14 @@ export default function SettingsPage() {
                 <Webhook size={20} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Yalidine Delivery</h3>
+                <h3 className="font-bold text-lg text-white" style={{ fontFamily: "var(--font-heading)" }}>Yalidine Delivery</h3>
                 <p className="text-gray-500 text-sm">Automatically dispatch your orders into the Yalidine network.</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">API ID</label>
+                <label className="text-sm font-bold text-gray-400">API ID</label>
                 <div className="relative">
                   <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -223,14 +223,14 @@ export default function SettingsPage() {
                     value={yalidineApiId}
                     onChange={(e) => setYalidineApiId(e.target.value)}
                     placeholder="Enter Yalidine API ID"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-4 py-3 text-gray-900 text-sm font-mono focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <span className="text-xs text-gray-400">Found in your Yalidine Developer Dashboard.</span>
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">API Token</label>
+                <label className="text-sm font-bold text-gray-400">API Token</label>
                 <div className="relative">
                   <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                     value={yalidineApiToken}
                     onChange={(e) => setYalidineApiToken(e.target.value)}
                     placeholder="Enter Yalidine API Token"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-4 py-3 text-gray-900 text-sm font-mono focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <span className="text-xs text-gray-400">Keep this token secure!</span>
@@ -248,7 +248,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Product Pricing Card */}
-        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+        <div className="bg-[#141720] rounded-2xl border border-white/5 overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -256,14 +256,14 @@ export default function SettingsPage() {
                 <DollarSign size={20} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Product Pricing</h3>
+                <h3 className="font-bold text-lg text-white" style={{ fontFamily: "var(--font-heading)" }}>Product Pricing</h3>
                 <p className="text-gray-500 text-sm">Set the prices displayed on the storefront. Changes apply instantly after save.</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">Single Piece Price</label>
+                <label className="text-sm font-bold text-gray-400">Single Piece Price</label>
                 <div className="relative">
                   <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                     value={singlePrice}
                     onChange={(e) => setSinglePrice(parseInt(e.target.value) || 0)}
                     placeholder="5400"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-16 py-3 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-16 py-3 text-white text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
                 </div>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-700">Bundle Price (2 Pieces)</label>
+                <label className="text-sm font-bold text-gray-400">Bundle Price (2 Pieces)</label>
                 <div className="relative">
                   <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -287,18 +287,18 @@ export default function SettingsPage() {
                     value={bundlePrice}
                     onChange={(e) => setBundlePrice(parseInt(e.target.value) || 0)}
                     placeholder="8200"
-                    className="w-full bg-[#F4F7FE] border-none rounded-xl pl-11 pr-16 py-3 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-16 py-3 text-white text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
                 </div>
-                <span className="text-xs text-gray-400">Promo price for 2 pieces (&quot;2 قطع&quot;). Savings: <strong className="text-emerald-600">{((singlePrice * 2) - bundlePrice).toLocaleString()} DA</strong></span>
+                <span className="text-xs text-gray-400">Promo price for 2 pieces (&quot;2 قطع&quot;). Savings: <strong className="text-emerald-400">{((singlePrice * 2) - bundlePrice).toLocaleString()} DA</strong></span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Delivery Zone Pricing Card */}
-        <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
+        <div className="bg-[#141720] rounded-2xl border border-white/5 overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-3 mb-6">
@@ -306,7 +306,7 @@ export default function SettingsPage() {
                 <Truck size={20} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900" style={{ fontFamily: "var(--font-heading)" }}>Delivery Pricing by Zone</h3>
+                <h3 className="font-bold text-lg text-white" style={{ fontFamily: "var(--font-heading)" }}>Delivery Pricing by Zone</h3>
                 <p className="text-gray-500 text-sm">Set delivery fees per zone. Each wilaya is assigned to a zone.</p>
               </div>
             </div>
@@ -320,16 +320,16 @@ export default function SettingsPage() {
                 { label: 'Zone 4 — Sud lointain', value: zone4, set: setZone4, color: 'orange' },
                 { label: 'Zone 5 — Grand Sud', value: zone5, set: setZone5, color: 'red' },
               ].map((z) => (
-                <div key={z.label} className="flex flex-col gap-1.5 bg-[#F4F7FE] rounded-xl p-4">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-tight">{z.label}</label>
+                <div key={z.label} className="flex flex-col gap-1.5 bg-white/5 rounded-xl p-4">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider leading-tight">{z.label}</label>
                   <div className="relative">
                     <input 
                       type="number" 
                       value={z.value}
                       onChange={(e) => z.set(parseInt(e.target.value) || 0)}
-                      className="w-full bg-white border border-gray-200 rounded-lg pl-3 pr-12 py-2 text-gray-900 text-sm font-mono font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg pl-3 pr-12 py-2 text-white text-sm font-mono font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">DA</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs font-bold">DA</span>
                   </div>
                 </div>
               ))}

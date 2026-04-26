@@ -5,6 +5,8 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-dm: 'DM Sans', sans-serif;
 }
 
 * {
@@ -43,4 +45,20 @@ body {
 ::selection {
   background: rgba(255, 255, 255, 0.15);
   color: white;
+}
+
+/* Hide scrollbar utility — for filter pills on mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* PWA safe area */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

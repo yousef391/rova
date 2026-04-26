@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
-import { Montserrat, DM_Sans } from "next/font/google";
 import Script from "next/script";
 import { supabase } from "@/lib/supabase";
 import "./globals.css";
-
-const montserrat = Montserrat({
-  weight: ["300", "400", "500", "700", "900"],
-  subsets: ["latin"],
-  variable: "--font-heading",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm",
-});
 
 export const metadata: Metadata = {
   title: "NOVA — Premium Streetwear",
@@ -38,6 +26,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Montserrat:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="theme-color" content="#0a0d14" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         <Script
           id="fb-pixel"
           strategy="afterInteractive"
@@ -56,8 +54,21 @@ export default async function RootLayout({
             `,
           }}
         />
+        <Script
+          id="sw-register"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').catch(() => {});
+                });
+              }
+            `,
+          }}
+        />
       </head>
-      <body className={`${montserrat.variable} ${dmSans.variable} antialiased`}>
+      <body className="antialiased">
         {children}
         <noscript>
           {/* eslint-disable-next-line @next/next/no-img-element */}

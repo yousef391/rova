@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     const referenceId = order.order_number ? order.order_number.toString() : order.id.toString();
 
     // Build product description for Yalidine
-    let productDescription = `${order.item} (${order.color}, ${order.size})`;
+    let productDescription = overrides?.product_list || `${order.item} (${order.color}, ${order.size})`;
     if (overrides?.autorisation_ouverture) {
       productDescription += ` - Autorisation d'ouverture: OUI`;
     }
