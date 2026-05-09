@@ -99,7 +99,8 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
           });
         }
       } else {
-        alert("Failed to place order. Please try again.");
+        const data = await res.json();
+        alert(data.error || "Failed to place order. Please try again.");
       }
     } catch (err) {
       console.error(err);
