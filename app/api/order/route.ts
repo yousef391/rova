@@ -15,9 +15,9 @@ export async function POST(request: Request) {
 
     // Clean old entries (older than 12h)
     const now = Date.now();
-    for (const [ip, timestamp] of orderHistory) {
+    orderHistory.forEach((timestamp, ip) => {
       if (now - timestamp > TWELVE_HOURS) orderHistory.delete(ip);
-    }
+    });
 
     // Check if this IP already ordered in the last 12h
     const lastOrder = orderHistory.get(clientIp);
