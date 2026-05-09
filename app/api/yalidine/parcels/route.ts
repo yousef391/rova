@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     // Yalidine masks firstname, familyname, contact_phone, address in GET responses.
     // Our local orders table stores the original unmasked data + the tracking_id.
     if (data.data && data.data.length > 0) {
-      const trackingIds = data.data.map((p: any) => p.tracking);
+      const trackingIds = data.data.map((p: { tracking: string }) => p.tracking);
 
       const { data: localOrders } = await supabase
         .from('orders')
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
         .in('tracking_id', trackingIds);
 
       if (localOrders && localOrders.length > 0) {
-        const orderMap = new Map(localOrders.map((o: any) => [o.tracking_id, o]));
+        const orderMap = new Map(localOrders.map((o: { tracking_id: string; name: string; phone: string; wilaya: string; commune: string }) => [o.tracking_id, o]));
 
         for (const parcel of data.data) {
           const local = orderMap.get(parcel.tracking);

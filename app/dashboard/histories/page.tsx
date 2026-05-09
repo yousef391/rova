@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Filter, Package, X, MapPin, Phone, Calendar, Truck, ChevronRight } from "lucide-react";
+import { Search, Filter, Package, X, MapPin, Phone, Calendar, Truck } from "lucide-react";
 
 /* ──────────────────────────── Types ──────────────────────────── */
 
@@ -105,7 +105,7 @@ export default function ParcelsPage() {
       const res = await fetch(`/api/yalidine/parcels?${params}`);
       const data: ParcelsResponse = await res.json();
 
-      if (!res.ok) throw new Error((data as any).error || "Fetch failed");
+      if (!res.ok) throw new Error((data as unknown as { error?: string }).error || "Fetch failed");
 
       setParcels(data.data || []);
       setTotalData(data.total_data || 0);
