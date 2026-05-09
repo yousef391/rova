@@ -36,6 +36,8 @@ const PIE_COLORS = ['#3b82f6', '#f59e0b', '#10b981', '#f97316', '#ef4444', '#8b5
 export default function DashboardStatistics() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [yalidineLivreCount, setYalidineLivreCount] = useState(0);
+  const [yalidineTotalCount, setYalidineTotalCount] = useState(0);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -53,14 +55,34 @@ export default function DashboardStatistics() {
         setLoading(false);
       }
     }
+
+    async function fetchYalidineStats() {
+      try {
+        // Fetch Livré count from Yalidine
+        const livreRes = await fetch('/api/yalidine/parcels?last_status=Livré&fields=tracking&page_size=1');
+        const livreData = await livreRes.json();
+        setYalidineLivreCount(livreData.total_data || 0);
+
+        // Fetch total parcels count from Yalidine
+        const totalRes = await fetch('/api/yalidine/parcels?fields=tracking&page_size=1');
+        const totalData = await totalRes.json();
+        setYalidineTotalCount(totalData.total_data || 0);
+      } catch (err) {
+        console.error("Error fetching Yalidine stats:", err);
+      }
+    }
+
     fetchOrders();
+    fetchYalidineStats();
   }, []);
 
   const totalOrders = orders.length;
   const confirmedCount = orders.filter(o => o.status === 'confirmed').length;
   const confirmedPercent = totalOrders > 0 ? ((confirmedCount / totalOrders) * 100).toFixed(1) : "0.0";
-  const livredCount = orders.filter(o => o.status === 'livred').length;
-  const livredPercent = totalOrders > 0 ? ((livredCount / totalOrders) * 100).toFixed(1) : "0.0";
+
+  // Livré stats from Yalidine directly
+  const livredCount = yalidineLivreCount;
+  const livredPercent = yalidineTotalCount > 0 ? ((livredCount / yalidineTotalCount) * 100).toFixed(1) : "0.0";
 
   let totalRevenue = 0;
   orders.forEach(o => {
@@ -171,6 +193,40 @@ export default function DashboardStatistics() {
           <div>
             <p className="text-gray-500 font-medium text-xs mb-0.5">Livré</p>
             <h3 className="text-xl lg:text-2xl font-black text-white tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>{livredCount}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Conversion Rates Section */}
+      <div className="grid grid-cols-1 gap-3 lg:gap-4">
+        {/* Taux de Confirmation */}
+        <div className="bg-[#141720] rounded-2xl p-5 lg:p-6 border border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>Taux de Confirmation</h3>
+                <p className="text-gray-500 text-[11px] mt-0.5">Commandes confirmées / Total commandes</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl lg:text-3xl font-black text-amber-400" style={{ fontFamily: "var(--font-heading)" }}>{confirmedPercent}%</span>
+              </div>
+            </div>
+            {/* Progress bar */}
+            <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${confirmedPercent}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center mt-3">
+              <span className="text-[11px] text-gray-500">
+                <span className="text-amber-400 font-bold">{confirmedCount}</span> confirmées
+              </span>
+              <span className="text-[11px] text-gray-600">
+                sur <span className="text-gray-400 font-bold">{totalOrders}</span> commandes
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -7,7 +7,8 @@ import {
   Settings,
   ShoppingBag,
   BarChart3,
-  X
+  X,
+  History
 } from 'lucide-react';
 
 type SidebarProps = {
@@ -42,6 +43,7 @@ const Sidebar = ({ mobileOpen = false, onMobileClose }: SidebarProps) => {
       items: [
         { name: "Statistics", path: "/dashboard", icon: BarChart3 },
         { name: "Commandes", path: "/dashboard/orders", icon: ShoppingBag },
+        { name: "Historiques", path: "/dashboard/histories", icon: History },
       ]
     },
     {
