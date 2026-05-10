@@ -2,10 +2,6 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { supabase } from '@/lib/supabase';
 
-// In-memory rate limit: 1 order per IP per 12h
-const orderHistory = new Map<string, number>();
-const TWELVE_HOURS = 12 * 60 * 60 * 1000;
-
 export async function POST(request: Request) {
   try {
     // Get client IP
@@ -13,15 +9,16 @@ export async function POST(request: Request) {
     const forwarded = headersList.get('x-forwarded-for');
     const clientIp = forwarded ? forwarded.split(',')[0].trim() : (headersList.get('x-real-ip') ?? 'unknown');
 
-    // Clean old entries (older than 12h)
-    const now = Date.now();
-    orderHistory.forEach((timestamp, ip) => {
-      if (now - timestamp > TWELVE_HOURS) orderHistory.delete(ip);
-    });
+    // Check if this IP already ordered in the last 48h (stored in Supabase, persists across deploys)
+    const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+    const { data: recentOrders } = await supabase
+      .from('order_rate_limits')
+      .select('id')
+      .eq('ip_address', clientIp)
+      .gte('created_at', fortyEightHoursAgo)
+      .limit(1);
 
-    // Check if this IP already ordered in the last 12h
-    const lastOrder = orderHistory.get(clientIp);
-    if (lastOrder && now - lastOrder < TWELVE_HOURS) {
+    if (recentOrders && recentOrders.length > 0) {
       return NextResponse.json(
         { error: "Vous avez déjà passé une commande aujourd'hui. Veuillez réessayer demain." },
         { status: 429 }
@@ -43,7 +40,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to save order to database." }, { status: 500 });
     }
     console.log("=== ORDER SAVED TO SUPABASE ===", body);
-    orderHistory.set(clientIp, now);
+
+    // Record this IP for rate limiting (persists in DB)
+    await supabase.from('order_rate_limits').insert([{ ip_address: clientIp }]);
 
     // 2. Fetch Notification Settings dynamically from DB
     const { data: settings } = await supabase.from('store_settings').select('*').eq('id', 1).single();
