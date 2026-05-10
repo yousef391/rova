@@ -65,6 +65,7 @@ export default function OrdersManagementPage() {
   // Filters & Pagination State
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [productFilter, setProductFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 15;
 
@@ -298,8 +299,11 @@ export default function OrdersManagementPage() {
       o.wilaya.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === "all" || o.status === statusFilter;
+    const matchesProduct = productFilter === "all" || 
+      (productFilter === "nocta" && o.item.toLowerCase().includes("nocta")) || 
+      (productFilter === "lin" && o.item.toLowerCase().includes("lin"));
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesProduct;
   });
 
   // Calculate Pagination
@@ -341,11 +345,20 @@ export default function OrdersManagementPage() {
           />
         </div>
         <select
+          value={productFilter}
+          onChange={(e) => setProductFilter(e.target.value)}
+          className="bg-[#141720] border border-white/5 rounded-lg px-3 py-2 text-xs font-bold text-gray-300 outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer min-w-[90px] text-center uppercase"
+        >
+          <option value="all">Produit: Tous</option>
+          <option value="nocta">Nocta</option>
+          <option value="lin">Lin Premium</option>
+        </select>
+        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="bg-[#141720] border border-white/5 rounded-lg px-3 py-2 text-xs font-bold text-gray-300 outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer min-w-[90px] text-center uppercase"
         >
-          <option value="all">All</option>
+          <option value="all">Status: All</option>
           {STATUS_OPTIONS.map(status => (
             <option key={status} value={status}>{status}</option>
           ))}
@@ -353,23 +366,47 @@ export default function OrdersManagementPage() {
       </div>
 
       {/* Desktop-only pill filters */}
-      <div className="hidden md:flex items-center gap-2">
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
-          <button 
-            onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${statusFilter === 'all' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
-          >
-            All
-          </button>
-          {STATUS_OPTIONS.map(status => (
+      <div className="hidden md:flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
             <button 
-              key={status}
-              onClick={() => setStatusFilter(status)}
-              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-colors uppercase whitespace-nowrap ${statusFilter === status ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+              onClick={() => setStatusFilter('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${statusFilter === 'all' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
             >
-              {status}
+              All
             </button>
-          ))}
+            {STATUS_OPTIONS.map(status => (
+              <button 
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-colors uppercase whitespace-nowrap ${statusFilter === status ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+          
+          {/* Product Pill Filter */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl">
+            <button 
+              onClick={() => setProductFilter('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${productFilter === 'all' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              All Products
+            </button>
+            <button 
+              onClick={() => setProductFilter('nocta')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors uppercase ${productFilter === 'nocta' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              Nocta
+            </button>
+            <button 
+              onClick={() => setProductFilter('lin')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors uppercase ${productFilter === 'lin' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              Lin
+            </button>
+          </div>
         </div>
       </div>
 

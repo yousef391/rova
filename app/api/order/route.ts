@@ -48,15 +48,39 @@ export async function POST(request: Request) {
     // 2. Fetch Notification Settings dynamically from DB
     const { data: settings } = await supabase.from('store_settings').select('*').eq('id', 1).single();
 
-    const botToken = settings?.telegram_bot_token;
-    const chatId = settings?.telegram_chat_id;
+    let botToken = settings?.telegram_bot_token;
+    let chatId = settings?.telegram_chat_id;
+
+    if (item === "Ensemble Lin Premium") {
+      botToken = settings?.lin_telegram_bot_token || botToken; // Fallback to main bot if not set
+      chatId = settings?.lin_telegram_chat_id || chatId;
+    }
 
     if (!botToken || !chatId) {
       console.warn("Telegram credentials not set in Database.");
       return NextResponse.json({ success: true, warning: 'Credentials missing in DB, order logged.' });
     }
 
-    const message = `
+    let message = '';
+
+    if (item === "Ensemble Lin Premium") {
+      message = `
+✨ *NOUVELLE COMMANDE LIN* ✨
+━━━━━━━━━━━━━━━━━━
+🤵 *Client*: ${name}
+📱 *Tél*: ${phone}
+🗺️ *Adresse*: ${wilaya} - ${commune}
+
+👔 *Article*: ${item} (${color})
+🛍️ *Quantité*: ${quantity || 1} pièce(s)
+📐 *Taille*: ${size}
+
+💶 *Prix Unitaire*: ${price}
+🛵 *Livraison*: ${delivery} DA
+💎 *Total*: *${total}*
+`;
+    } else {
+      message = `
 🚨 *NEW CHECKOUT ORDER*
 ━━━━━━━━━━━━━━━━━━
 👤 *Name*: ${name}
@@ -71,6 +95,7 @@ export async function POST(request: Request) {
 🚚 *Delivery*: ${delivery} DA
 🛒 *Total*: *${total}*
 `;
+    }
 
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
     const response = await fetch(telegramUrl, {

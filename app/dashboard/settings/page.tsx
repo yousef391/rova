@@ -10,6 +10,8 @@ export default function SettingsPage() {
   
   const [telegramToken, setTelegramToken] = useState("");
   const [telegramChatId, setTelegramChatId] = useState("");
+  const [linTelegramToken, setLinTelegramToken] = useState("");
+  const [linTelegramChatId, setLinTelegramChatId] = useState("");
   const [fbPixelId, setFbPixelId] = useState("");
   
   // Yalidine
@@ -35,6 +37,8 @@ export default function SettingsPage() {
         if (data) {
           setTelegramToken(data.telegram_bot_token || "");
           setTelegramChatId(data.telegram_chat_id || "");
+          setLinTelegramToken(data.lin_telegram_bot_token || "");
+          setLinTelegramChatId(data.lin_telegram_chat_id || "");
           setFbPixelId(data.fb_pixel_id || "");
           setYalidineApiId(data.yalidine_api_id || "");
           setYalidineApiToken(data.yalidine_api_token || "");
@@ -66,6 +70,8 @@ export default function SettingsPage() {
         .update({
           telegram_bot_token: telegramToken,
           telegram_chat_id: telegramChatId,
+          lin_telegram_bot_token: linTelegramToken,
+          lin_telegram_chat_id: linTelegramChatId,
           fb_pixel_id: fbPixelId,
           yalidine_api_id: yalidineApiId,
           yalidine_api_token: yalidineApiToken,
@@ -158,8 +164,44 @@ export default function SettingsPage() {
                     className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
-                <span className="text-xs text-gray-400">The channel or user ID where orders go.</span>
+                <span className="text-xs text-gray-400">The group or user ID to receive messages.</span>
               </div>
+              
+              {/* New Lin Bot Configuration */}
+              <div className="flex flex-col gap-2 pt-4 border-t border-white/5 md:col-span-2">
+                <h4 className="text-sm font-bold text-[#2AABEE]" style={{ fontFamily: "var(--font-heading)" }}>Ensemble Lin Notifications</h4>
+                <p className="text-xs text-gray-400 mb-2">Leave blank to use the default bot configuration above.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-bold text-gray-400">Lin Bot Token</label>
+                    <div className="relative">
+                      <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input 
+                        type="password" 
+                        value={linTelegramToken}
+                        onChange={(e) => setLinTelegramToken(e.target.value)}
+                        placeholder="Enter Lin Bot Token"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-bold text-gray-400">Lin Chat ID</label>
+                    <div className="relative">
+                      <Link2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input 
+                        type="text" 
+                        value={linTelegramChatId}
+                        onChange={(e) => setLinTelegramChatId(e.target.value)}
+                        placeholder="-100123456789"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
