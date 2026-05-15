@@ -12,12 +12,13 @@ export const metadata = {
 export default async function EnsembleLinPage() {
   const { data } = await supabase
     .from('store_settings')
-    .select('single_price, bundle_price, zone_0_price, zone_1_price, zone_2_price, zone_3_price, zone_4_price, zone_5_price')
+    .select('zone_0_price, zone_1_price, zone_2_price, zone_3_price, zone_4_price, zone_5_price')
     .eq('id', 1)
     .single();
 
-  const initialSinglePrice = data?.single_price ?? 5400;
-  const initialBundlePrice = data?.bundle_price ?? 8200;
+  // Hardcoded prices for Ensemble Lin product
+  const initialSinglePrice = 4800;
+  const initialBundlePrice = 8600;
   const initialZonePrices = {
     0: data?.zone_0_price ?? 590,
     1: data?.zone_1_price ?? 700,
