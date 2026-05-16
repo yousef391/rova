@@ -271,7 +271,7 @@ export default function ParcelsPage() {
 
                       {/* Price */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="text-sm font-bold text-white">{p.price.toLocaleString()} DA</div>
+                        <div className="text-sm font-bold text-white">{p.price.toLocaleString('en')} DA</div>
                         <div className="text-[10px] text-gray-600 mt-0.5">
                           Livr. {p.delivery_fee} DA
                           {p.freeshipping ? <span className="text-emerald-500 ml-1">Free</span> : null}
@@ -377,7 +377,7 @@ export default function ParcelsPage() {
 
                 <div className="bg-white/5 rounded-xl p-3">
                   <div className="text-gray-500 text-[10px] uppercase font-semibold mb-1">Montant</div>
-                  <div className="text-lg font-bold text-white">{selectedParcel.price.toLocaleString()} <span className="text-xs text-gray-400">DA</span></div>
+                  <div className="text-lg font-bold text-white">{selectedParcel.price.toLocaleString('en')} <span className="text-xs text-gray-400">DA</span></div>
                   <div className="text-[10px] text-gray-500">Livraison: {selectedParcel.delivery_fee} DA</div>
                 </div>
               </div>

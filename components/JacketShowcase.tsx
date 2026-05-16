@@ -78,9 +78,9 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
           color: jacket.colorName,
           size: selectedSize,
           quantity: selectedQuantity,
-          price: `${productPrice.toLocaleString()} DA`,
+          price: `${productPrice.toLocaleString('en')} DA`,
           delivery: deliveryPrice,
-          total: `${totalPrice.toLocaleString()} DA`
+          total: `${totalPrice.toLocaleString('en')} DA`
         })
       });
       
@@ -225,13 +225,13 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                   className="flex flex-col items-end pt-1"
                 >
                   {selectedQuantity === 2 && (
-                    <span className="text-white/40 text-[0.85rem] line-through" style={{ fontFamily: "var(--font-dm)" }}>{(singlePrice * 2).toLocaleString()} DA</span>
+                    <span className="text-white/40 text-[0.85rem] line-through" style={{ fontFamily: "var(--font-dm)" }}>{(singlePrice * 2).toLocaleString('en')} DA</span>
                   )}
                   <span className="text-white text-[1.6rem] font-bold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-heading)" }}>
-                    {productPrice.toLocaleString()} DA
+                    {productPrice.toLocaleString('en')} DA
                   </span>
                   {selectedQuantity === 2 && (
-                    <span className="text-amber-400 text-[10px] font-bold tracking-wide" style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString()} DA 🔥</span>
+                    <span className="text-amber-400 text-[10px] font-bold tracking-wide" style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString('en')} DA 🔥</span>
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -252,7 +252,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                  <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded-[1.2rem] p-3.5 shadow-inner backdrop-blur-sm">
                    <span className="text-white/60 text-[11px] uppercase tracking-widest font-bold font-dm">Size</span>
                    <div className="flex gap-2">
-                      {["S", "M", "L", "XL"].map((s) => (
+                      {["M", "L", "XL"].map((s) => (
                          <button key={s} type="button" onClick={() => setSelectedSize(s)} className={`w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black transition-all duration-300 ${selectedSize === s ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]" : "bg-white/10 text-white"}`} style={{ fontFamily: "var(--font-dm)" }}>
                            {s}
                          </button>
@@ -265,13 +265,13 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                    <div className="flex gap-2">
                       <button type="button" onClick={() => setSelectedQuantity(1)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 rounded-[1.2rem] p-3 transition-all duration-300 border ${selectedQuantity === 1 ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "bg-white/5 text-white border-white/10"}`}>
                         <span className="text-[13px] font-black" style={{ fontFamily: "var(--font-dm)" }}>1 قطعة</span>
-                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>{singlePrice.toLocaleString()} DA</span>
+                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>{singlePrice.toLocaleString('en')} DA</span>
                       </button>
                       <button type="button" onClick={() => setSelectedQuantity(2)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 rounded-[1.2rem] p-3 transition-all duration-300 border relative overflow-hidden ${selectedQuantity === 2 ? "bg-gradient-to-r from-amber-400 to-orange-500 text-black border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.4)]" : "bg-white/5 text-white border-white/10"}`}>
                         <span className="absolute -top-0 -right-0 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg rounded-tr-[1.1rem]">PROMO</span>
                         <span className="text-[13px] font-black" style={{ fontFamily: "var(--font-dm)" }}>2 قطع 🔥</span>
-                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>{bundlePrice.toLocaleString()} DA</span>
-                        <span className={`text-[9px] font-bold ${selectedQuantity === 2 ? "text-black/60" : "text-amber-400"}`} style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString()} DA</span>
+                        <span className="text-[15px] font-black" style={{ fontFamily: "var(--font-heading)" }}>{bundlePrice.toLocaleString('en')} DA</span>
+                        <span className={`text-[9px] font-bold ${selectedQuantity === 2 ? "text-black/60" : "text-amber-400"}`} style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString('en')} DA</span>
                       </button>
                    </div>
                  </div>
@@ -332,7 +332,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                     <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1 mt-1 font-sans">
                       <div className="flex justify-between text-white/70 text-xs">
                         <span>المجموع ({selectedQuantity} قطعة - المقاس: {selectedSize})</span>
-                        <span dir="ltr">{productPrice.toLocaleString()} DA</span>
+                        <span dir="ltr">{productPrice.toLocaleString('en')} DA</span>
                      </div>
                      <div className="flex justify-between text-white/70 text-xs">
                        <span>التوصيل</span>
@@ -341,7 +341,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                      <div className="h-[1px] w-full bg-white/10 my-1"/>
                      <div className="flex justify-between text-white text-sm font-bold">
                        <span>السعر النهائي</span>
-                       <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
+                       <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString('en')} DA` : '---'}</span>
                      </div>
                    </div>
 
@@ -442,7 +442,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
         </div>
         <div className="flex flex-col gap-3 items-end">
           <span className="text-white/60 text-xs uppercase tracking-[0.2em] font-bold" style={{ fontFamily: "var(--font-heading)" }}>Size</span>
-          {["S", "M", "L", "XL"].map((s) => (
+          {["M", "L", "XL"].map((s) => (
             <button
               key={s} onClick={() => setSelectedSize(s)}
               className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all ${selectedSize === s ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/20"}`}
@@ -461,7 +461,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
             style={{ fontFamily: "var(--font-dm)" }}
           >
             <span className="text-xs font-bold">1 pc</span>
-            <span className="text-[10px] font-bold opacity-70">{singlePrice.toLocaleString()}</span>
+            <span className="text-[10px] font-bold opacity-70">{singlePrice.toLocaleString('en')}</span>
           </button>
           <button
             onClick={() => setSelectedQuantity(2)}
@@ -469,7 +469,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
             style={{ fontFamily: "var(--font-dm)" }}
           >
             <span className="text-xs font-bold">2 pcs 🔥</span>
-            <span className="text-[10px] font-bold opacity-70">{bundlePrice.toLocaleString()}</span>
+            <span className="text-[10px] font-bold opacity-70">{bundlePrice.toLocaleString('en')}</span>
           </button>
         </div>
       </div>
@@ -516,13 +516,13 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
               className="flex flex-col items-center"
             >
               {selectedQuantity === 2 && (
-                <span className="text-white/40 text-sm line-through" style={{ fontFamily: "var(--font-dm)" }}>{(singlePrice * 2).toLocaleString()} DA</span>
+                <span className="text-white/40 text-sm line-through" style={{ fontFamily: "var(--font-dm)" }}>{(singlePrice * 2).toLocaleString('en')} DA</span>
               )}
               <span className="text-white text-3xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
-                {productPrice.toLocaleString()} DA
+                {productPrice.toLocaleString('en')} DA
               </span>
               {selectedQuantity === 2 && (
-                <span className="text-amber-400 text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString()} DA 🔥</span>
+                <span className="text-amber-400 text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-dm)" }}>وفّر {((singlePrice * 2) - bundlePrice).toLocaleString('en')} DA 🔥</span>
               )}
             </motion.div>
           </AnimatePresence>
@@ -598,7 +598,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-2 mt-1 font-sans relative z-10">
                   <div className="flex justify-between text-white/70 text-sm">
                     <span>المجموع ({selectedQuantity} قطعة - المقاس: {selectedSize})</span>
-                    <span dir="ltr">{productPrice.toLocaleString()} DA</span>
+                    <span dir="ltr">{productPrice.toLocaleString('en')} DA</span>
                   </div>
                   <div className="flex justify-between text-white/70 text-sm">
                     <span>التوصيل</span>
@@ -607,7 +607,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                   <div className="h-[1px] w-full bg-white/10 my-1"/>
                   <div className="flex justify-between text-white text-lg font-black">
                     <span>السعر النهائي</span>
-                    <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString()} DA` : '---'}</span>
+                    <span dir="ltr">{selectedWilaya ? `${totalPrice.toLocaleString('en')} DA` : '---'}</span>
                   </div>
                 </div>
 
@@ -758,7 +758,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 font-medium">المبلغ الإجمالي</span>
                   <span className="text-lg font-black text-gray-900" style={{ fontFamily: "var(--font-heading)" }} dir="ltr">
-                    {totalPrice.toLocaleString()} DA
+                    {totalPrice.toLocaleString('en')} DA
                   </span>
                 </div>
               </motion.div>

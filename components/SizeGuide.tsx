@@ -4,7 +4,6 @@ import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 
 const sizeData = [
-  { size: "S", heightMin: 160, heightMax: 170, weightMin: 55, weightMax: 65 },
   { size: "M", heightMin: 168, heightMax: 178, weightMin: 63, weightMax: 75 },
   { size: "L", heightMin: 175, heightMax: 185, weightMin: 73, weightMax: 85 },
   { size: "XL", heightMin: 183, heightMax: 195, weightMin: 83, weightMax: 100 },

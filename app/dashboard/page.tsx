@@ -151,7 +151,7 @@ export default function DashboardStatistics() {
           <div className="z-10">
             <p className="text-white/70 font-medium text-xs mb-0.5">Projected Revenue</p>
             <h3 className="text-xl lg:text-2xl font-black tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
-              {totalRevenue.toLocaleString()} <span className="text-[10px] text-white/60 font-medium uppercase">DA</span>
+              {totalRevenue.toLocaleString('en')} <span className="text-[10px] text-white/60 font-medium uppercase">DA</span>
             </h3>
           </div>
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
