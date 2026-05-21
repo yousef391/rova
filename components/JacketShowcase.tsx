@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { jackets } from "@/data/jackets";
 import algeriaData from "@/data/algeria.json";
@@ -27,6 +27,9 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [hasTrackedAddToCart, setHasTrackedAddToCart] = useState(false);
   const animating = useRef(false);
+  const abandonedLeadSent = useRef(false);
+  const formNameRef = useRef("");
+  const formPhoneRef = useRef("");
 
   // Dynamic prices from props (fetched on the server)
   const singlePrice = initialSinglePrice;
@@ -41,6 +44,53 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
   
   const productPrice = selectedQuantity === 2 ? bundlePrice : singlePrice;
   const totalPrice = productPrice + deliveryPrice;
+
+  // ── Abandoned Lead Detection ──
+  // Send lead data when user leaves without completing the order
+  const sendAbandonedLead = useCallback(() => {
+    const name = formNameRef.current;
+    const phone = formPhoneRef.current;
+    // Only send if user has entered both name and phone but hasn't ordered and isn't currently submitting
+    if (!name || !phone || orderSuccess || isSubmitting || abandonedLeadSent.current) return;
+    abandonedLeadSent.current = true;
+
+    const wilayaObj = algeriaData.wilayas.find((w: { wilaya_id: string; wilaya_name_latin: string }) => w.wilaya_id.toString() === selectedWilaya);
+    const payload = JSON.stringify({
+      name,
+      phone,
+      wilaya: wilayaObj ? `${wilayaObj.wilaya_id} - ${wilayaObj.wilaya_name_latin}` : selectedWilaya || null,
+      commune: selectedCommune || null,
+      item: jackets[currentIndex]?.name,
+      color: jackets[currentIndex]?.colorName,
+      size: selectedSize,
+      quantity: selectedQuantity,
+      price: `${productPrice.toLocaleString('en')} DA`,
+      delivery: deliveryPrice,
+      total: selectedWilaya ? `${totalPrice.toLocaleString('en')} DA` : null,
+    });
+
+    // Use sendBeacon for reliable delivery on page unload
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/abandoned-lead', new Blob([payload], { type: 'application/json' }));
+    } else {
+      fetch('/api/abandoned-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+    }
+  }, [selectedWilaya, selectedCommune, selectedSize, selectedQuantity, productPrice, deliveryPrice, totalPrice, currentIndex, orderSuccess, isSubmitting]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => sendAbandonedLead();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') sendAbandonedLead();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [sendAbandonedLead]);
 
   const navigate = useCallback((dir: number) => {
     if (animating.current) return;
@@ -285,8 +335,8 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                >
                  <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-xl border border-white/10 mt-1 shadow-2xl flex flex-col gap-3">
                    <h3 className="text-white font-black uppercase tracking-tight text-lg mb-1 hidden" style={{ fontFamily: "var(--font-heading)" }}>تأكيد الطلبية</h3>
-                   <input required name="name" placeholder="الاسم الكامل" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
-                   <input required type="tel" name="phone" placeholder="رقم الهاتف" className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors text-right" dir="ltr" />
+                   <input required name="name" placeholder="الاسم الكامل" onChange={e => { formNameRef.current = e.target.value; }} className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors" />
+                   <input required type="tel" name="phone" placeholder="رقم الهاتف" onChange={e => { formPhoneRef.current = e.target.value; }} className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors text-right" dir="ltr" />
                    <div className="flex flex-col gap-2">
                      <select 
                        required 
@@ -551,8 +601,8 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-[-1]" />
                 
                 <h3 className="text-white font-black tracking-tight text-2xl mb-1 relative z-10" style={{ fontFamily: "var(--font-heading)" }}>تأكيد الطلبية</h3>
-                <input required name="name" placeholder="الاسم الكامل" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors text-base relative z-10" />
-                <input required type="tel" name="phone" placeholder="رقم الهاتف" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors text-right text-base relative z-10" dir="ltr" />
+                <input required name="name" placeholder="الاسم الكامل" onChange={e => { formNameRef.current = e.target.value; }} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors text-base relative z-10" />
+                <input required type="tel" name="phone" placeholder="رقم الهاتف" onChange={e => { formPhoneRef.current = e.target.value; }} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors text-right text-base relative z-10" dir="ltr" />
                 <div className="flex gap-2 relative z-10">
                   <select 
                     required 
