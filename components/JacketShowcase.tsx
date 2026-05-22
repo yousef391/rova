@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { jackets } from "@/data/jackets";
 import algeriaData from "@/data/algeria.json";
 import Image from "next/image";
+import { useMetaEvents } from "@/hooks/useMetaEvents";
 
 interface JacketShowcaseProps {
   initialSinglePrice: number;
@@ -30,6 +31,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
   const abandonedLeadSent = useRef(false);
   const formNameRef = useRef("");
   const formPhoneRef = useRef("");
+  const { sendEvent } = useMetaEvents();
 
   // Dynamic prices from props (fetched on the server)
   const singlePrice = initialSinglePrice;
@@ -137,17 +139,15 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
       if (res.ok) {
         setOrderSuccess(true);
         
-        // Track the purchase event for Facebook Pixel
-        type FBQ = (action: string, event: string, params?: Record<string, unknown>) => void;
-        if (typeof window !== "undefined" && (window as unknown as { fbq?: FBQ }).fbq) {
-          ((window as unknown as { fbq: FBQ }).fbq)('track', 'Purchase', {
-            currency: 'DZD',
-            value: totalPrice,
-            content_name: jacket.name,
-            content_category: jacket.productType,
-            content_type: 'product',
-          });
-        }
+        // Track the purchase event via CAPI + browser pixel
+        sendEvent('Purchase', {
+          value: totalPrice,
+          currency: 'DZD',
+          contentIds: [String(jacket.id)],
+          contentName: jacket.name,
+          contentCategory: jacket.productType,
+          contentType: 'product',
+        });
       } else {
         const data = await res.json();
         alert(data.error || "Failed to place order. Please try again.");
@@ -346,11 +346,14 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                          setSelectedCommune(""); 
                          if (!hasTrackedAddToCart) {
                            setHasTrackedAddToCart(true);
-                           /* eslint-disable @typescript-eslint/no-explicit-any */
-                           if (typeof window !== "undefined" && (window as any).fbq) {
-                             (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
-                           }
-                           /* eslint-enable @typescript-eslint/no-explicit-any */
+                           sendEvent('AddToCart', {
+                             value: productPrice,
+                             currency: 'DZD',
+                             contentIds: [String(jacket.id)],
+                             contentName: jacket.name,
+                             contentCategory: jacket.productType,
+                             contentType: 'product',
+                           });
                          }
                        }}
                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[15px] text-white focus:outline-none focus:border-white/40 transition-colors appearance-none"
@@ -612,11 +615,14 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
                       setSelectedCommune(""); 
                       if (!hasTrackedAddToCart) {
                         setHasTrackedAddToCart(true);
-                        /* eslint-disable @typescript-eslint/no-explicit-any */
-                        if (typeof window !== "undefined" && (window as any).fbq) {
-                          (window as any).fbq('track', 'AddToCart', { currency: 'DZD', value: productPrice, content_name: jacket.name, content_category: jacket.productType, content_type: 'product' });
-                        }
-                        /* eslint-enable @typescript-eslint/no-explicit-any */
+                        sendEvent('AddToCart', {
+                          value: productPrice,
+                          currency: 'DZD',
+                          contentIds: [String(jacket.id)],
+                          contentName: jacket.name,
+                          contentCategory: jacket.productType,
+                          contentType: 'product',
+                        });
                       }
                     }}
                     className="w-[45%] bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/50 transition-colors appearance-none cursor-pointer text-base"
