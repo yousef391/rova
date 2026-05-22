@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Search, Phone, Copy, Check, X, UserX, RefreshCw, MessageCircle, Tag } from 'lucide-react';
 
@@ -52,17 +52,26 @@ export default function AbandonedLeadsPage() {
   const [contactNotes, setContactNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const fetchLeads = useCallback(async () => {
+  const fetchLeads = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('abandoned_leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (!error) setLeads(data || []);
-    setLoading(false);
-  }, []);
+    try {
+      const res = await fetch('/api/abandoned-leads');
+      const data = await res.json();
+      if (res.ok) {
+        setLeads(data || []);
+      } else {
+        console.error("Error fetching abandoned leads", data.error);
+      }
+    } catch (err) {
+      console.error("Error fetching abandoned leads", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => { fetchLeads(); }, [fetchLeads]);
+  useEffect(() => {
+    fetchLeads();
+  }, []);
 
   const copyPhone = (phone: string) => {
     navigator.clipboard.writeText(phone);
@@ -71,8 +80,12 @@ export default function AbandonedLeadsPage() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    setLeads(prev => prev.map(l => l.id === id ? { ...l, status } : l));
-    await supabase.from('abandoned_leads').update({ status, contacted: status !== 'new', contacted_at: status !== 'new' ? new Date().toISOString() : null }).eq('id', id);
+    setLeads(leads.map(l => l.id === id ? { ...l, status } : l));
+    const { error } = await supabase.from('abandoned_leads').update({ status, contacted: status !== 'new', contacted_at: status !== 'new' ? new Date().toISOString() : null }).eq('id', id);
+    if (error) {
+      console.error("Failed to update status", error);
+      fetchLeads();
+    }
   };
 
   const openReduceModal = (lead: Lead) => {
@@ -98,7 +111,7 @@ export default function AbandonedLeadsPage() {
       contacted_at: new Date().toISOString(),
     }).eq('id', editingLead.id);
 
-    setLeads(prev => prev.map(l => l.id === editingLead.id ? {
+    setLeads(leads.map(l => l.id === editingLead.id ? {
       ...l, reduced_price: `${rp.toLocaleString('en')} DA`, reduced_total: reducedTotal,
       contact_notes: contactNotes, status: 'contacted', contacted: true
     } : l));
@@ -121,7 +134,7 @@ export default function AbandonedLeadsPage() {
       await supabase.from('abandoned_leads').update({
         converted: true, status: 'converted', converted_order_id: data.id
       }).eq('id', lead.id);
-      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, converted: true, status: 'converted' } : l));
+      setLeads(leads.map(l => l.id === lead.id ? { ...l, converted: true, status: 'converted' } : l));
       alert('Lead converted to order successfully!');
     } else {
       alert('Failed to convert lead.');
@@ -131,7 +144,7 @@ export default function AbandonedLeadsPage() {
   const deleteLead = async (id: string) => {
     if (!confirm('Delete this lead?')) return;
     await supabase.from('abandoned_leads').delete().eq('id', id);
-    setLeads(prev => prev.filter(l => l.id !== id));
+    setLeads(leads.filter(l => l.id !== id));
   };
 
   const filtered = leads.filter(l => {
@@ -142,7 +155,7 @@ export default function AbandonedLeadsPage() {
 
   const stats = {
     total: leads.length,
-    new: leads.filter(l => l.status === 'new').length,
+    newCount: leads.filter(l => l.status === 'new').length,
     contacted: leads.filter(l => l.contacted).length,
     converted: leads.filter(l => l.converted).length,
   };
@@ -165,13 +178,13 @@ export default function AbandonedLeadsPage() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Total Leads', value: stats.total, color: 'blue', icon: UserX },
-          { label: 'Nouveaux', value: stats.new, color: 'amber', icon: Tag },
-          { label: 'Contactés', value: stats.contacted, color: 'purple', icon: MessageCircle },
-          { label: 'Convertis', value: stats.converted, color: 'emerald', icon: Check },
+          { label: 'Total Leads', value: stats.total, bg: 'bg-blue-500/15', text: 'text-blue-400', icon: UserX },
+          { label: 'Nouveaux', value: stats.newCount, bg: 'bg-amber-500/15', text: 'text-amber-400', icon: Tag },
+          { label: 'Contactés', value: stats.contacted, bg: 'bg-purple-500/15', text: 'text-purple-400', icon: MessageCircle },
+          { label: 'Convertis', value: stats.converted, bg: 'bg-emerald-500/15', text: 'text-emerald-400', icon: Check },
         ].map(s => (
           <div key={s.label} className="bg-[#141720] rounded-2xl p-4 border border-white/5 flex flex-col justify-between h-[100px]">
-            <div className={`w-8 h-8 bg-${s.color}-500/15 rounded-lg flex items-center justify-center text-${s.color}-400`}>
+            <div className={`w-8 h-8 ${s.bg} rounded-lg flex items-center justify-center ${s.text}`}>
               <s.icon size={16} />
             </div>
             <div>
