@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+
 import { Search, Phone, Copy, Check, X, UserX, RefreshCw, MessageCircle, Tag } from 'lucide-react';
 
 type Lead = {
@@ -80,10 +80,14 @@ export default function AbandonedLeadsPage() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    setLeads(leads.map(l => l.id === id ? { ...l, status } : l));
-    const { error } = await supabase.from('abandoned_leads').update({ status, contacted: status !== 'new', contacted_at: status !== 'new' ? new Date().toISOString() : null }).eq('id', id);
-    if (error) {
-      console.error("Failed to update status", error);
+    setLeads(leads.map(l => l.id === id ? { ...l, status, contacted: status !== 'new' } : l));
+    const res = await fetch('/api/abandoned-leads', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, action: 'update_status', status }),
+    });
+    if (!res.ok) {
+      console.error('Failed to update status');
       fetchLeads();
     }
   };
@@ -101,18 +105,22 @@ export default function AbandonedLeadsPage() {
     const rp = parseInt(reducedPrice, 10) || 0;
     const delivery = editingLead.delivery || 0;
     const reducedTotal = `${(rp + delivery).toLocaleString('en')} DA`;
+    const rpFormatted = `${rp.toLocaleString('en')} DA`;
 
-    await supabase.from('abandoned_leads').update({
-      reduced_price: `${rp.toLocaleString('en')} DA`,
-      reduced_total: reducedTotal,
-      contact_notes: contactNotes,
-      status: 'contacted',
-      contacted: true,
-      contacted_at: new Date().toISOString(),
-    }).eq('id', editingLead.id);
+    await fetch('/api/abandoned-leads', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: editingLead.id,
+        action: 'reduce_price',
+        reduced_price: rpFormatted,
+        reduced_total: reducedTotal,
+        contact_notes: contactNotes,
+      }),
+    });
 
     setLeads(leads.map(l => l.id === editingLead.id ? {
-      ...l, reduced_price: `${rp.toLocaleString('en')} DA`, reduced_total: reducedTotal,
+      ...l, reduced_price: rpFormatted, reduced_total: reducedTotal,
       contact_notes: contactNotes, status: 'contacted', contacted: true
     } : l));
     setEditingLead(null);
@@ -121,19 +129,14 @@ export default function AbandonedLeadsPage() {
 
   const convertToOrder = async (lead: Lead) => {
     if (!confirm(`Convert ${lead.name} to a real order?`)) return;
-    const price = lead.reduced_price || lead.original_price || '0';
-    const total = lead.reduced_total || lead.original_total || '0';
 
-    const { data, error } = await supabase.from('orders').insert([{
-      name: lead.name, phone: lead.phone, wilaya: lead.wilaya, commune: lead.commune,
-      item: lead.item, color: lead.color, size: lead.size, quantity: lead.quantity,
-      price, delivery: lead.delivery, total, status: 'confirmed'
-    }]).select('id').single();
+    const res = await fetch('/api/abandoned-leads', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: lead.id, action: 'convert', lead }),
+    });
 
-    if (!error && data) {
-      await supabase.from('abandoned_leads').update({
-        converted: true, status: 'converted', converted_order_id: data.id
-      }).eq('id', lead.id);
+    if (res.ok) {
       setLeads(leads.map(l => l.id === lead.id ? { ...l, converted: true, status: 'converted' } : l));
       alert('Lead converted to order successfully!');
     } else {
@@ -143,8 +146,12 @@ export default function AbandonedLeadsPage() {
 
   const deleteLead = async (id: string) => {
     if (!confirm('Delete this lead?')) return;
-    await supabase.from('abandoned_leads').delete().eq('id', id);
-    setLeads(leads.filter(l => l.id !== id));
+    const res = await fetch(`/api/abandoned-leads?id=${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setLeads(leads.filter(l => l.id !== id));
+    } else {
+      alert('Failed to delete lead.');
+    }
   };
 
   const filtered = leads.filter(l => {
