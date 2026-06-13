@@ -1,8 +1,44 @@
 import crypto from "crypto";
+import { supabase } from "@/lib/supabase";
 
-const PIXEL_ID = process.env.META_PIXEL_ID!;
-const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN!;
 const API_VERSION = "v21.0";
+
+// ── Dynamic config from Supabase (cached for 60s) ──
+let cachedConfig: { pixelId: string; accessToken: string } | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL_MS = 60_000; // 60 seconds
+
+async function getMetaConfig(): Promise<{ pixelId: string; accessToken: string }> {
+  const now = Date.now();
+  if (cachedConfig && now - cacheTimestamp < CACHE_TTL_MS) {
+    return cachedConfig;
+  }
+
+  try {
+    const { data } = await supabase
+      .from("store_settings")
+      .select("fb_pixel_id, meta_access_token")
+      .eq("id", 1)
+      .single();
+
+    if (data?.fb_pixel_id && data?.meta_access_token) {
+      cachedConfig = {
+        pixelId: data.fb_pixel_id,
+        accessToken: data.meta_access_token,
+      };
+      cacheTimestamp = now;
+      return cachedConfig;
+    }
+  } catch (err) {
+    console.error("[Meta CAPI] Failed to fetch config from DB:", err);
+  }
+
+  // Fallback to .env if DB fails
+  return {
+    pixelId: process.env.META_PIXEL_ID || "",
+    accessToken: process.env.META_ACCESS_TOKEN || "",
+  };
+}
 
 /**
  * SHA-256 hash a string value (lowercased, trimmed) as required by Meta CAPI.
@@ -100,7 +136,8 @@ export async function sendServerEvent(payload: MetaEventPayload): Promise<{ succ
   };
 
   try {
-    const url = `https://graph.facebook.com/${API_VERSION}/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`;
+    const { pixelId, accessToken } = await getMetaConfig();
+    const url = `https://graph.facebook.com/${API_VERSION}/${pixelId}/events?access_token=${accessToken}`;
 
     const res = await fetch(url, {
       method: "POST",

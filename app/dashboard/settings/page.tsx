@@ -13,6 +13,7 @@ export default function SettingsPage() {
   const [linTelegramToken, setLinTelegramToken] = useState("");
   const [linTelegramChatId, setLinTelegramChatId] = useState("");
   const [fbPixelId, setFbPixelId] = useState("");
+  const [metaAccessToken, setMetaAccessToken] = useState("");
   
   // Yalidine
   const [yalidineApiId, setYalidineApiId] = useState("");
@@ -40,6 +41,7 @@ export default function SettingsPage() {
           setLinTelegramToken(data.lin_telegram_bot_token || "");
           setLinTelegramChatId(data.lin_telegram_chat_id || "");
           setFbPixelId(data.fb_pixel_id || "");
+          setMetaAccessToken(data.meta_access_token || "");
           setYalidineApiId(data.yalidine_api_id || "");
           setYalidineApiToken(data.yalidine_api_token || "");
           setSinglePrice(data.single_price ?? 5400);
@@ -73,6 +75,7 @@ export default function SettingsPage() {
           lin_telegram_bot_token: linTelegramToken,
           lin_telegram_chat_id: linTelegramChatId,
           fb_pixel_id: fbPixelId,
+          meta_access_token: metaAccessToken,
           yalidine_api_id: yalidineApiId,
           yalidine_api_token: yalidineApiToken,
           single_price: singlePrice,
@@ -224,7 +227,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-400">Pixel ID (Database value)</label>
+                <label className="text-sm font-bold text-gray-400">Pixel ID</label>
                 <div className="relative">
                   <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
@@ -236,6 +239,21 @@ export default function SettingsPage() {
                   />
                 </div>
                 <span className="text-xs text-gray-400">Dynamically used across all customer-facing pages.</span>
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold text-gray-400">CAPI Access Token</label>
+                <div className="relative">
+                  <Shield size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input 
+                    type="password" 
+                    value={metaAccessToken}
+                    onChange={(e) => setMetaAccessToken(e.target.value)}
+                    placeholder="Enter Meta Access Token"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  />
+                </div>
+                <span className="text-xs text-gray-400">Server-side Conversions API token. Found in Meta Events Manager.</span>
               </div>
             </div>
           </div>
