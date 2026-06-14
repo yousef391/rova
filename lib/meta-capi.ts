@@ -131,8 +131,8 @@ export async function sendServerEvent(payload: MetaEventPayload): Promise<{ succ
         custom_data,
       },
     ],
-    // ⚠️ TEST MODE — Uncomment this line to debug in Events Manager
-    // test_event_code: "TEST49121",
+    // ⚠️ TEST MODE — Comment this line before going to production
+    test_event_code: "TEST51730",
   };
 
   try {
