@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const { path } = await req.json();
     if (path) {
-      revalidatePath(path);
+      revalidatePath(path, 'layout');
       return NextResponse.json({ revalidated: true, now: Date.now() });
     }
     return NextResponse.json({ revalidated: false, message: 'Missing path' }, { status: 400 });

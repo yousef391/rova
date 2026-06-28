@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// SMS Sender Supabase project (hardcoded for testing — move to .env later)
+const smsSupabase = createClient(
+  'https://alrvuuoaqnbvkbwtizch.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFscnZ1dW9hcW5idmtid3RpemNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MjMzNTIsImV4cCI6MjA5NzE5OTM1Mn0.wC_vCS1GEg8dPUZlkPecvAELfGFBCZAFBmZtf73OHgg'
+);
 
 export async function POST(request: Request) {
   try {
@@ -184,6 +191,23 @@ export async function POST(request: Request) {
       .from('orders')
       .update({ tracking_id: trackingId })
       .eq('id', order.id);
+
+    // Sync customer data to SMS Sender Supabase project
+    // This allows the webhook Edge Function to look up real phone numbers
+    try {
+      await smsSupabase.from('customers').upsert({
+        tracking: trackingId,
+        order_id: referenceId,
+        customer_name: finalName,
+        phone_number: finalPhone,
+        wilaya: strictWilayaName,
+        commune: strictCommuneName,
+        address: finalAddress,
+      }, { onConflict: 'tracking' });
+    } catch (syncErr) {
+      // Don't fail the main request if SMS sync fails
+      console.error('SMS Supabase sync error:', syncErr);
+    }
 
     return NextResponse.json({ success: true, tracking_id: trackingId, yalidine_label: result.label });
 
