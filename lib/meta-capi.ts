@@ -132,7 +132,7 @@ export async function sendServerEvent(payload: MetaEventPayload): Promise<{ succ
       },
     ],
     // ⚠️ TEST MODE — Uncomment to debug in Events Manager
-    // test_event_code: "TEST51730",
+    // test_event_code: "TEST21372",
   };
 
   try {

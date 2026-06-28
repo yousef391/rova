@@ -63,8 +63,11 @@ function getCookie(name: string): string | undefined {
  */
 export function useMetaEvents(userInfo?: UserInfo) {
   const sendEvent = useCallback(
-    (eventName: string, customData?: EventCustomData) => {
+    (eventName: string, customData?: EventCustomData, eventUserInfo?: UserInfo) => {
       const eventId = generateEventId();
+
+      // Merge hook-level user info with per-event user info (event-level takes priority)
+      const mergedUser = { ...userInfo, ...eventUserInfo };
 
       // ── 1. Browser Pixel (fallback for deduplication) ──
       if (typeof window !== "undefined") {
@@ -92,11 +95,11 @@ export function useMetaEvents(userInfo?: UserInfo) {
         eventId,
         eventSourceUrl: typeof window !== "undefined" ? window.location.href : undefined,
         userData: {
-          email: userInfo?.email,
-          phone: userInfo?.phone,
-          firstName: userInfo?.firstName,
-          lastName: userInfo?.lastName,
-          userId: userInfo?.userId,
+          email: mergedUser?.email,
+          phone: mergedUser?.phone,
+          firstName: mergedUser?.firstName,
+          lastName: mergedUser?.lastName,
+          userId: mergedUser?.userId,
           fbc,
           fbp,
         },

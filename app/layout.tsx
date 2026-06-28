@@ -15,7 +15,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch dynamic settings from Supabase database
-  let pixelId = "000000000000";
+  let pixelId = "2133839294033756";
   try {
     const { data } = await supabase.from('store_settings').select('fb_pixel_id').eq('id', 1).single();
     if (data?.fb_pixel_id) pixelId = data.fb_pixel_id;

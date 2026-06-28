@@ -30,25 +30,30 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Never cache API calls or Supabase requests — always go to network
+  // Never cache API calls, Supabase requests, or Facebook pixel
   if (
     url.pathname.startsWith('/api/') ||
-    url.hostname.includes('supabase')
+    url.hostname.includes('supabase') ||
+    url.hostname.includes('facebook.net') ||
+    url.hostname.includes('facebook.com')
   ) {
     return;
   }
 
   // For navigation requests, try network first, fall back to cache
+  // Only cache dashboard pages — never cache product pages (they contain inline pixel)
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
+    if (url.pathname.startsWith('/dashboard')) {
+      event.respondWith(
+        fetch(request)
+          .then((response) => {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            return response;
+          })
+          .catch(() => caches.match(request))
+      );
+    }
     return;
   }
 

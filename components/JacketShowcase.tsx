@@ -147,7 +147,7 @@ const JacketShowcase: React.FC<JacketShowcaseProps> = ({
           contentName: jacket.name,
           contentCategory: jacket.productType,
           contentType: 'product',
-        });
+        }, { phone, firstName: name });
       } else {
         const data = await res.json();
         alert(data.error || "Failed to place order. Please try again.");
