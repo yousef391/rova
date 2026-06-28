@@ -18,7 +18,7 @@ export default async function RootLayout({
   let pixelId = "2133839294033756";
   try {
     const { data } = await supabase.from('store_settings').select('fb_pixel_id').eq('id', 1).single();
-    if (data?.fb_pixel_id) pixelId = data.fb_pixel_id;
+    if (data?.fb_pixel_id) pixelId = data.fb_pixel_id.trim();
   } catch (err) {
     console.error("Error fetching FB Pixel from DB", err);
   }

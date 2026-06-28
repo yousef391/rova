@@ -23,8 +23,8 @@ async function getMetaConfig(): Promise<{ pixelId: string; accessToken: string }
 
     if (data?.fb_pixel_id && data?.meta_access_token) {
       cachedConfig = {
-        pixelId: data.fb_pixel_id,
-        accessToken: data.meta_access_token,
+        pixelId: data.fb_pixel_id.trim(),
+        accessToken: data.meta_access_token.trim(),
       };
       cacheTimestamp = now;
       return cachedConfig;
