@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Search, 
@@ -58,9 +58,34 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const normalizePhone = (phone: string): string => {
+  if (!phone) return "";
+  let clean = phone.replace(/[\s\-()]/g, '');
+  if (clean.startsWith('+213')) {
+    clean = '0' + clean.slice(4);
+  } else if (clean.startsWith('00213')) {
+    clean = '0' + clean.slice(5);
+  } else if (clean.startsWith('213') && clean.length > 9) {
+    clean = '0' + clean.slice(3);
+  }
+  return clean;
+};
+
 export default function OrdersManagementPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Compute Phone Counts mapping
+  const phoneCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    orders.forEach(o => {
+      if (o.phone) {
+        const clean = normalizePhone(o.phone);
+        counts[clean] = (counts[clean] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [orders]);
 
   // Filters & Pagination State
   const [searchQuery, setSearchQuery] = useState("");
@@ -477,10 +502,26 @@ export default function OrdersManagementPage() {
                     </div>
                     {/* Row 2: phone + meta */}
                     <div className="flex items-center justify-between gap-2 mb-2 ml-7">
-                      <button onClick={() => copyPhone(order.phone)} className="flex items-center gap-1 group shrink-0">
-                        <span className="text-[11px] text-blue-400 font-mono" dir="ltr">{order.phone}</span>
-                        {copiedPhone === order.phone ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} className="text-gray-700 group-active:text-blue-400" />}
-                      </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button onClick={() => copyPhone(order.phone)} className="flex items-center gap-1 group">
+                          <span className="text-[11px] text-blue-400 font-mono" dir="ltr">{order.phone}</span>
+                          {copiedPhone === order.phone ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} className="text-gray-700 group-active:text-blue-400" />}
+                        </button>
+                        {(() => {
+                          const clean = normalizePhone(order.phone);
+                          const count = phoneCounts[clean] || 0;
+                          if (count <= 0) return null;
+                          return (
+                            <span className={`px-1 rounded text-[9px] font-bold ${
+                              count > 1 
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                                : 'bg-white/5 text-gray-400 border border-white/10'
+                            }`}>
+                              {count}
+                            </span>
+                          );
+                        })()}
+                      </div>
                       <div className="text-[10px] text-gray-600 truncate text-right">
                         {order.wilaya} · {order.color} · {order.size}
                       </div>
@@ -561,10 +602,26 @@ export default function OrdersManagementPage() {
                           <div className="text-sm font-bold text-white">{order.name}</div>
                           {order.order_number && <span className="text-[10px] font-bold text-blue-400 bg-blue-500/15 px-2 py-0.5 rounded-full">#{order.order_number}</span>}
                         </div>
-                        <button onClick={() => copyPhone(order.phone)} className="flex items-center gap-1.5 mt-1 group/phone">
-                          <span className="text-xs text-blue-400 font-mono" dir="ltr">{order.phone}</span>
-                          {copiedPhone === order.phone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-gray-600 group-hover/phone:text-blue-400 transition-colors" />}
-                        </button>
+                        <div className="flex items-center gap-2 mt-1">
+                          <button onClick={() => copyPhone(order.phone)} className="flex items-center gap-1.5 group/phone">
+                            <span className="text-xs text-blue-400 font-mono" dir="ltr">{order.phone}</span>
+                            {copiedPhone === order.phone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-gray-600 group-hover/phone:text-blue-400 transition-colors" />}
+                          </button>
+                          {(() => {
+                            const clean = normalizePhone(order.phone);
+                            const count = phoneCounts[clean] || 0;
+                            if (count <= 0) return null;
+                            return (
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                count > 1 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                                  : 'bg-white/5 text-gray-400 border border-white/10'
+                              }`}>
+                                {count} {count === 1 ? 'cmd' : 'cmds'}
+                              </span>
+                            );
+                          })()}
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="text-sm text-gray-300">{order.wilaya}</div>

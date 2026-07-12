@@ -1,8 +1,22 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 import { Search, Phone, Copy, Check, X, UserX, RefreshCw, MessageCircle, Tag } from 'lucide-react';
+
+const normalizePhone = (phone: string): string => {
+  if (!phone) return "";
+  let clean = phone.replace(/[\s\-()]/g, '');
+  if (clean.startsWith('+213')) {
+    clean = '0' + clean.slice(4);
+  } else if (clean.startsWith('00213')) {
+    clean = '0' + clean.slice(5);
+  } else if (clean.startsWith('213') && clean.length > 9) {
+    clean = '0' + clean.slice(3);
+  }
+  return clean;
+};
 
 type Lead = {
   id: string;
@@ -51,6 +65,27 @@ export default function AbandonedLeadsPage() {
   const [reducedPrice, setReducedPrice] = useState('');
   const [contactNotes, setContactNotes] = useState('');
   const [saving, setSaving] = useState(false);
+  const [orderPhoneCounts, setOrderPhoneCounts] = useState<Record<string, number>>({});
+
+  const fetchOrderCounts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('phone');
+      if (error) throw error;
+      
+      const counts: Record<string, number> = {};
+      (data || []).forEach((o: { phone: string }) => {
+        if (o.phone) {
+          const clean = normalizePhone(o.phone);
+          counts[clean] = (counts[clean] || 0) + 1;
+        }
+      });
+      setOrderPhoneCounts(counts);
+    } catch (err) {
+      console.error("Error fetching order phone counts:", err);
+    }
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -71,6 +106,7 @@ export default function AbandonedLeadsPage() {
 
   useEffect(() => {
     fetchLeads();
+    fetchOrderCounts();
   }, []);
 
   const copyPhone = (phone: string) => {
@@ -251,6 +287,20 @@ export default function AbandonedLeadsPage() {
                       <span className="text-xs text-blue-400 font-mono">{lead.phone}</span>
                       {copiedPhone === lead.phone ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} className="text-gray-600" />}
                     </button>
+                    {(() => {
+                      const clean = normalizePhone(lead.phone);
+                      const count = orderPhoneCounts[clean] || 0;
+                      if (count <= 0) return null;
+                      return (
+                        <span className={`px-1 rounded text-[9px] font-bold ${
+                          count > 1 
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                            : 'bg-white/5 text-gray-400 border border-white/10'
+                        }`}>
+                          {count} {count === 1 ? 'cmd' : 'cmds'}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="text-[11px] text-gray-500 mb-2">
                     {lead.wilaya && <span>{lead.wilaya}</span>}{lead.item && <span> · {lead.item}</span>}{lead.size && <span> · {lead.size}</span>}
@@ -300,10 +350,26 @@ export default function AbandonedLeadsPage() {
                       <td className="py-4 px-4 text-xs text-gray-500">{new Date(lead.created_at).toLocaleDateString()}</td>
                       <td className="py-4 px-4">
                         <div className="text-sm font-bold text-white">{lead.name}</div>
-                        <button onClick={() => copyPhone(lead.phone)} className="flex items-center gap-1.5 mt-1 group/p">
-                          <span className="text-xs text-blue-400 font-mono">{lead.phone}</span>
-                          {copiedPhone === lead.phone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-gray-600 group-hover/p:text-blue-400" />}
-                        </button>
+                        <div className="flex items-center gap-2 mt-1">
+                          <button onClick={() => copyPhone(lead.phone)} className="flex items-center gap-1.5 group/p">
+                            <span className="text-xs text-blue-400 font-mono">{lead.phone}</span>
+                            {copiedPhone === lead.phone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-gray-600 group-hover/p:text-blue-400" />}
+                          </button>
+                          {(() => {
+                            const clean = normalizePhone(lead.phone);
+                            const count = orderPhoneCounts[clean] || 0;
+                            if (count <= 0) return null;
+                            return (
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                count > 1 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                                  : 'bg-white/5 text-gray-400 border border-white/10'
+                              }`}>
+                                {count} {count === 1 ? 'cmd' : 'cmds'}
+                              </span>
+                            );
+                          })()}
+                        </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="text-sm text-gray-300">{lead.wilaya || '---'}</div>
