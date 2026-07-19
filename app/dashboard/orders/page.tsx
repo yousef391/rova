@@ -17,6 +17,40 @@ import {
 } from 'lucide-react';
 import algeriaData from '@/data/algeria.json';
 
+const ECOM_ZONES = [
+  { dom: 400, stopdesk: 300, wilayas: ["31"] },
+  { dom: 480, stopdesk: 350, wilayas: ["16"] },
+  { dom: 580, stopdesk: 380, wilayas: ["9", "35", "42"] },
+  { dom: 600, stopdesk: 400, wilayas: ["46"] },
+  { dom: 650, stopdesk: 350, wilayas: ["2", "13"] },
+  { dom: 650, stopdesk: 400, wilayas: ["22", "27"] },
+  { dom: 680, stopdesk: 380, wilayas: ["15"] },
+  { dom: 680, stopdesk: 400, wilayas: ["48"] },
+  { dom: 700, stopdesk: 380, wilayas: ["25"] },
+  { dom: 700, stopdesk: 400, wilayas: ["14", "26", "29"] },
+  { dom: 700, stopdesk: 420, wilayas: ["10", "20", "38", "44"] },
+  { dom: 720, stopdesk: 420, wilayas: ["4", "6", "18", "19", "21", "23", "28", "34"] },
+  { dom: 730, stopdesk: 450, wilayas: ["5", "24", "40", "41", "43"] },
+  { dom: 750, stopdesk: 450, wilayas: ["12", "36"] },
+  { dom: 800, stopdesk: 500, wilayas: ["3", "7", "17", "51"] },
+  { dom: 850, stopdesk: 500, wilayas: ["47", "58"] },
+  { dom: 900, stopdesk: 550, wilayas: ["30", "39"] },
+  { dom: 930, stopdesk: 550, wilayas: ["45", "55", "57"] },
+  { dom: 970, stopdesk: 700, wilayas: ["32"] },
+  { dom: 1000, stopdesk: 700, wilayas: ["8"] },
+  { dom: 1000, stopdesk: 750, wilayas: ["52"] },
+  { dom: 1100, stopdesk: 750, wilayas: ["1", "37", "49"] },
+  { dom: 1400, stopdesk: 950, wilayas: ["53"] },
+  { dom: 1500, stopdesk: 1050, wilayas: ["11", "33"] },
+  { dom: 2100, stopdesk: 1500, wilayas: ["56"] }
+];
+
+const getEcomDeliveryPrice = (wilayaId: string, isStopdesk: boolean) => {
+  const zone = ECOM_ZONES.find(z => z.wilayas.includes(wilayaId.toString()));
+  if (!zone) return isStopdesk ? 400 : 700; // default fallback
+  return isStopdesk ? zone.stopdesk : zone.dom;
+};
+
 type Order = {
   id: string;
   order_number?: number;
@@ -103,6 +137,12 @@ export default function OrdersManagementPage() {
   const [editingDispatchOrder, setEditingDispatchOrder] = useState<Order | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dispatchData, setDispatchData] = useState<any>({});
+
+  // Ecom Operations
+  const [editingEcomOrder, setEditingEcomOrder] = useState<Order | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [ecomDispatchData, setEcomDispatchData] = useState<any>({});
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
 
@@ -296,7 +336,7 @@ export default function OrdersManagementPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           orderId: editingDispatchOrder.id,
-          overrides: dispatchData
+          overrides: { ...dispatchData, forceRetry: true }
         })
       });
       const data = await res.json();
@@ -311,6 +351,66 @@ export default function OrdersManagementPage() {
     } catch (err) {
       console.error(err);
       alert("Network error pushing to Yalidine.");
+    } finally {
+      setPushingId(null);
+    }
+  };
+
+  const openEcomDispatchModal = (order: Order) => {
+    setEditingEcomOrder(order);
+    
+    const wilayaMatch = order.wilaya.match(/^(\d+)/);
+    const defaultWilayaId = wilayaMatch ? wilayaMatch[1] : "";
+    
+    const originalPrice = parseInt(order.price.replace(/[^\d]/g, ''), 10) || 0;
+
+    setEcomDispatchData({
+      name: order.name,
+      phone: order.phone,
+      wilaya: defaultWilayaId || order.wilaya,
+      commune: order.commune,
+      address: order.commune || "", 
+      product_list: `${order.item} - ${order.color} - ${order.size}`,
+      product_price: originalPrice,
+      is_stopdesk: false,
+      stopdesk_id: "",
+      has_exchange: false,
+      note: ""
+    });
+  };
+
+  const pushToEcom = async () => {
+    if (!editingEcomOrder) return;
+    setPushingId(editingEcomOrder.id);
+    
+    const deliveryCost = getEcomDeliveryPrice(ecomDispatchData.wilaya, ecomDispatchData.is_stopdesk);
+    const finalTotal = (ecomDispatchData.product_price || 0) + deliveryCost;
+
+    try {
+      const res = await fetch('/api/ecom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          orderId: editingEcomOrder.id,
+          overrides: {
+            ...ecomDispatchData,
+            price: finalTotal,
+            forceRetry: true
+          }
+        })
+      });
+      const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        alert(data.error || "Failed to push to Ecom.");
+      } else {
+        alert(`Successfully dispatched to Ecom! Tracking ID: ${data.tracking_id}`);
+        setOrders(orders.map(o => o.id === editingEcomOrder.id ? { ...o, tracking_id: data.tracking_id } : o));
+        setEditingEcomOrder(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error pushing to Ecom.");
     } finally {
       setPushingId(null);
     }
@@ -537,17 +637,25 @@ export default function OrdersManagementPage() {
                           <option key={opt} value={opt} className="bg-[#141720] text-gray-200">{opt}</option>
                         ))}
                       </select>
-                      {order.tracking_id ? (
+                      {order.tracking_id && (
                         <span className="text-[9px] font-mono font-bold text-gray-500 bg-white/5 px-1.5 py-1.5 rounded truncate max-w-[80px]">{order.tracking_id}</span>
-                      ) : (
+                      )}
+                      <div className="flex gap-1">
                         <button 
                           onClick={() => openDispatchModal(order)}
                           disabled={pushingId === order.id}
                           className="bg-[#e11d48] text-white disabled:opacity-50 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors whitespace-nowrap shrink-0"
                         >
-                          {pushingId === order.id ? "..." : "Yalidine"}
+                          {pushingId === order.id ? "..." : (order.tracking_id ? "R-Yali" : "Yali")}
                         </button>
-                      )}
+                        <button 
+                          onClick={() => openEcomDispatchModal(order)}
+                          disabled={pushingId === order.id}
+                          className="bg-indigo-600 text-white disabled:opacity-50 text-[10px] font-bold px-2.5 py-1.5 rounded transition-colors whitespace-nowrap shrink-0"
+                        >
+                          {pushingId === order.id ? "..." : (order.tracking_id ? "R-Ecom" : "Ecom")}
+                        </button>
+                      </div>
                       <button
                         onClick={() => openEditModal(order)}
                         className="bg-white/5 hover:bg-blue-500/20 text-gray-600 hover:text-blue-400 p-1.5 rounded transition-colors shrink-0"
@@ -645,20 +753,27 @@ export default function OrdersManagementPage() {
                       </td>
                       <td className="py-4 px-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          {order.tracking_id ? (
-                            <div className="flex flex-col items-center gap-1 min-w-[100px]">
-                              <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Tracking</span>
-                              <span className="text-xs font-mono font-bold text-gray-300 bg-white/5 px-2 py-1 rounded">{order.tracking_id}</span>
+                          {order.tracking_id && (
+                            <div className="flex flex-col items-center gap-1 min-w-[70px]">
+                              <span className="text-[10px] font-mono font-bold text-gray-300 bg-white/5 px-2 py-1 rounded">{order.tracking_id}</span>
                             </div>
-                          ) : (
+                          )}
+                          <div className="flex flex-col gap-1 min-w-[90px]">
                             <button 
                               onClick={() => openDispatchModal(order)}
                               disabled={pushingId === order.id}
-                              className="bg-[#e11d48] hover:bg-[#be123c] text-white disabled:opacity-50 text-xs font-bold px-3 py-2 rounded-lg transition-colors shadow-sm shadow-[#e11d48]/20 whitespace-nowrap min-w-[100px]"
+                              className="bg-[#e11d48] hover:bg-[#be123c] text-white disabled:opacity-50 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-colors shadow-sm shadow-[#e11d48]/20 whitespace-nowrap"
                             >
-                              {pushingId === order.id ? "Pushing..." : "Send Yalidine"}
+                              {pushingId === order.id ? "Pushing..." : (order.tracking_id ? "Retry Yali" : "Yalidine")}
                             </button>
-                          )}
+                            <button 
+                              onClick={() => openEcomDispatchModal(order)}
+                              disabled={pushingId === order.id}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-colors shadow-sm shadow-indigo-600/20 whitespace-nowrap"
+                            >
+                              {pushingId === order.id ? "Pushing..." : (order.tracking_id ? "Retry Ecom" : "Ecom")}
+                            </button>
+                          </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); openEditModal(order); }}
                             className="bg-white/5 hover:bg-blue-500/20 text-gray-500 hover:text-blue-400 p-2 rounded-lg transition-colors flex shrink-0"
@@ -922,6 +1037,177 @@ export default function OrdersManagementPage() {
                 className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#e11d48] hover:bg-[#be123c] transition-colors flex items-center justify-center min-w-[140px]"
               >
                 {pushingId === editingDispatchOrder.id ? "Dispatching..." : "Confirm & Send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ecom Dispatch Modal */}
+      {editingEcomOrder && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#141720] rounded-t-[1.5rem] md:rounded-2xl w-full md:max-w-xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto shadow-2xl p-5 md:p-8 border border-white/5">
+            <div className="flex justify-between items-center mb-5 md:mb-6">
+              <h3 className="text-lg md:text-xl font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>Ecom Dispatch</h3>
+              <button onClick={() => setEditingEcomOrder(null)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Customer Name</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.name} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, name: e.target.value})} 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Phone</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.phone} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, phone: e.target.value})} 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Wilaya ID</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.wilaya} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, wilaya: e.target.value})} 
+                    placeholder="e.g. 16"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Commune</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.commune} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, commune: e.target.value})} 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Detailed Address</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.address} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, address: e.target.value})} 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white"
+                  />
+              </div>
+
+              <div>
+                 <label className="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">Product Description</label>
+                  <input 
+                    type="text" 
+                    value={ecomDispatchData.product_list || ''} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, product_list: e.target.value})} 
+                    className="w-full bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder:text-gray-600"
+                  />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Product Price</label>
+                  <div className="relative">
+                    <input 
+                      type="number" 
+                      value={ecomDispatchData.product_price} 
+                      onChange={e => setEcomDispatchData({...ecomDispatchData, product_price: parseInt(e.target.value) || 0})} 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white font-mono font-bold"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs font-bold">DA</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Exchange Parcel?</label>
+                  <div className="flex items-center h-full">
+                    <button
+                      type="button"
+                      onClick={() => setEcomDispatchData({...ecomDispatchData, has_exchange: !ecomDispatchData.has_exchange})}
+                      className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${
+                        ecomDispatchData.has_exchange ? 'bg-indigo-500' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-200 ${
+                        ecomDispatchData.has_exchange ? 'translate-x-5' : 'translate-x-0'
+                      }`} />
+                    </button>
+                    <span className="ml-3 text-sm text-gray-300 font-bold">{ecomDispatchData.has_exchange ? 'Yes' : 'No'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Shipping Method</label>
+                  <select 
+                    value={ecomDispatchData.is_stopdesk ? "stopdesk" : "home"} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, is_stopdesk: e.target.value === "stopdesk"})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white appearance-none cursor-pointer"
+                  >
+                    <option value="home" className="bg-[#141720]">Domicile</option>
+                    <option value="stopdesk" className="bg-[#141720]">Bureau (Stopdesk)</option>
+                  </select>
+                </div>
+              </div>
+
+              {ecomDispatchData.is_stopdesk && (
+                <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl mt-4">
+                  <label className="block text-xs font-bold text-orange-400 uppercase tracking-wider mb-1">Stop Desk Code</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 31B"
+                    value={ecomDispatchData.stopdesk_id} 
+                    onChange={e => setEcomDispatchData({...ecomDispatchData, stopdesk_id: e.target.value})} 
+                    className="w-full bg-white/5 border border-orange-500/20 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 text-white"
+                  />
+                </div>
+              )}
+
+              {/* Dynamic Total calculation display */}
+              <div className="mt-4 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-indigo-300/70 font-medium mb-1">Total = Product + Delivery</div>
+                  <div className="text-sm text-indigo-200">
+                    {ecomDispatchData.product_price || 0} DA + {getEcomDeliveryPrice(ecomDispatchData.wilaya, ecomDispatchData.is_stopdesk)} DA
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-indigo-300 uppercase tracking-wider font-bold mb-1">Total à Ramasser</div>
+                  <div className="text-xl font-bold text-white font-mono">
+                    {(ecomDispatchData.product_price || 0) + getEcomDeliveryPrice(ecomDispatchData.wilaya, ecomDispatchData.is_stopdesk)} DA
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button 
+                onClick={() => setEditingEcomOrder(null)}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-400 bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={pushToEcom}
+                disabled={pushingId === editingEcomOrder.id}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex items-center justify-center min-w-[140px]"
+              >
+                {pushingId === editingEcomOrder.id ? "Dispatching..." : "Confirm & Send"}
               </button>
             </div>
           </div>
