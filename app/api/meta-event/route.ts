@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
       eventSourceUrl,
       userData = {},
       customData = {},
+      pixelId,
     } = body as MetaEventPayload;
 
     if (!eventName || !eventId) {
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       },
       customData,
       actionSource: "website",
+      pixelId,
     });
 
     if (result.success) {

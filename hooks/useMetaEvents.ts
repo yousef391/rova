@@ -20,12 +20,10 @@ interface EventCustomData {
   orderId?: string;
 }
 
-type FBQ = (
-  action: string,
-  event: string,
-  params?: Record<string, unknown>,
-  options?: Record<string, unknown>
-) => void;
+type FBQ = {
+  (action: string, eventName: string, params?: Record<string, unknown>, options?: Record<string, unknown>): void;
+  (action: string, pixelId: string, eventName: string, params?: Record<string, unknown>, options?: Record<string, unknown>): void;
+};
 
 /**
  * Generate a UUID v4 for event deduplication between browser pixel and CAPI.
@@ -61,7 +59,7 @@ function getCookie(name: string): string | undefined {
  * With user info (when auth is available):
  *   const { sendEvent } = useMetaEvents({ email: 'a@b.com', phone: '0555123456' });
  */
-export function useMetaEvents(userInfo?: UserInfo) {
+export function useMetaEvents(userInfo?: UserInfo, customPixelId?: string) {
   const sendEvent = useCallback(
     (eventName: string, customData?: EventCustomData, eventUserInfo?: UserInfo) => {
       const eventId = generateEventId();
@@ -71,7 +69,7 @@ export function useMetaEvents(userInfo?: UserInfo) {
 
       // ── 1. Browser Pixel (fallback for deduplication) ──
       if (typeof window !== "undefined") {
-        const fbq = (window as unknown as { fbq?: FBQ }).fbq;
+        const fbq = (window as unknown as { fbq?: FBQ; fbqSingle?: FBQ }).fbq;
         if (fbq) {
           const pixelParams: Record<string, unknown> = {};
           if (customData?.value !== undefined) pixelParams.value = customData.value;
@@ -82,7 +80,11 @@ export function useMetaEvents(userInfo?: UserInfo) {
           if (customData?.contentType) pixelParams.content_type = customData.contentType;
 
           // Pass eventID for deduplication with CAPI
-          fbq("track", eventName, pixelParams, { eventID: eventId });
+          if (customPixelId) {
+            fbq("trackSingle", customPixelId, eventName, pixelParams, { eventID: eventId });
+          } else {
+            fbq("track", eventName, pixelParams, { eventID: eventId });
+          }
         }
       }
 
@@ -104,6 +106,7 @@ export function useMetaEvents(userInfo?: UserInfo) {
           fbp,
         },
         customData,
+        pixelId: customPixelId,
       };
 
       fetch("/api/meta-event", {
@@ -115,7 +118,7 @@ export function useMetaEvents(userInfo?: UserInfo) {
         console.error("[useMetaEvents] CAPI request failed:", err);
       });
     },
-    [userInfo]
+    [userInfo, customPixelId]
   );
 
   return { sendEvent };

@@ -81,6 +81,7 @@ export interface MetaEventPayload {
   userData?: MetaUserData;
   customData?: MetaCustomData;
   actionSource?: string;
+  pixelId?: string;
 }
 
 /**
@@ -95,6 +96,7 @@ export async function sendServerEvent(payload: MetaEventPayload): Promise<{ succ
     userData = {},
     customData = {},
     actionSource = "website",
+    pixelId: overridePixelId,
   } = payload;
 
   // Build hashed user_data
@@ -131,13 +133,12 @@ export async function sendServerEvent(payload: MetaEventPayload): Promise<{ succ
         custom_data,
       },
     ],
-    // ⚠️ TEST MODE — Uncomment to debug in Events Manager
-    // test_event_code: "TEST21372",
   };
 
   try {
-    const { pixelId, accessToken } = await getMetaConfig();
-    const url = `https://graph.facebook.com/${API_VERSION}/${pixelId}/events?access_token=${accessToken}`;
+    const { pixelId: defaultPixelId, accessToken } = await getMetaConfig();
+    const targetPixelId = overridePixelId || defaultPixelId;
+    const url = `https://graph.facebook.com/${API_VERSION}/${targetPixelId}/events?access_token=${accessToken}`;
 
     const res = await fetch(url, {
       method: "POST",
