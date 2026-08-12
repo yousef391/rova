@@ -62,7 +62,24 @@ export async function POST(request: Request) {
 
     let message = '';
 
-    if (item === "Ensemble Lin Premium") {
+    if (item.includes("HOCO")) {
+      message = `
+📍 *COMMANDE HOCO E101 TAG* 📍
+━━━━━━━━━━━━━━━━━━
+👤 *Client*: ${name}
+📞 *Tél*: ${phone}
+📍 *Wilaya/Commune*: ${wilaya} - ${commune}
+
+📦 *Produit*: ${item}
+🎨 *Modèle/Couleur*: ${color}
+🛍️ *Formule*: ${size}
+🔢 *Quantité*: ${quantity || 1}
+
+💰 *Prix Produit*: ${price}
+🚚 *Frais Livraison*: ${delivery} DA
+🛒 *TOTAL A PAYER*: *${total}*
+`;
+    } else if (item === "Ensemble Lin Premium") {
       message = `
 ✨ *NOUVELLE COMMANDE LIN* ✨
 ━━━━━━━━━━━━━━━━━━
