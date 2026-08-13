@@ -10,7 +10,7 @@ interface HocoTagShowcaseProps {
   initialZonePrices: Record<number, number>;
 }
 
-const AIRTAG_PIXEL_ID = "1031581459671396";
+const AIRTAG_PIXEL_ID = "1035134782774910";
 
 export default function HocoTagShowcase({ initialZonePrices }: HocoTagShowcaseProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -37,7 +37,7 @@ export default function HocoTagShowcase({ initialZonePrices }: HocoTagShowcasePr
   const galleryImages = product.gallery || [product.image];
   const productPrice = selectedQuantity === 2 ? 6000 : 3200;
 
-  // Initialize product specific Meta Pixel 1031581459671396
+  // Initialize product specific Meta Pixel 1035134782774910
   useEffect(() => {
     if (typeof window !== "undefined") {
       const fbq = (window as unknown as { fbq?: (action: string, idOrEvent: string, eventName?: string, params?: Record<string, unknown>) => void }).fbq;

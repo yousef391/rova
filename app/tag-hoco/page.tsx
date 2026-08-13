@@ -40,8 +40,8 @@ export default async function HocoTagPage() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1031581459671396');
-            fbq('trackSingle', '1031581459671396', 'PageView');
+            fbq('init', '1035134782774910');
+            fbq('trackSingle', '1035134782774910', 'PageView');
           `,
         }}
       />
