@@ -79,6 +79,23 @@ export async function POST(request: Request) {
 🚚 *Frais Livraison*: ${delivery} DA
 🛒 *TOTAL A PAYER*: *${total}*
 `;
+    } else if (item.includes("السيليكون") || item.includes("Silicone")) {
+      message = `
+🛁 *طلب جديد - ليفة السيليكون المزدوجة* 🛁
+━━━━━━━━━━━━━━━━━━
+👤 *الزبون*: ${name}
+📞 *الهاتف*: ${phone}
+📍 *الولاية/البلدية*: ${wilaya} - ${commune}
+
+📦 *المنتج*: ${item}
+🎨 *اللون*: ${color}
+🛍️ *العرض*: ${size}
+🔢 *الكمية*: ${quantity || 1}
+
+💰 *سعر المنتج*: ${price}
+🚚 *التوصيل*: ${delivery} DA
+🛒 *المبلغ الإجمالي*: *${total}*
+`;
     } else if (item === "Ensemble Lin Premium") {
       message = `
 ✨ *NOUVELLE COMMANDE LIN* ✨
