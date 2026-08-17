@@ -1,3 +1,4 @@
+import Script from "next/script";
 import SiliconeLoofahShowcase from "@/components/SiliconeLoofahShowcase";
 import { supabase } from "@/lib/supabase";
 
@@ -7,6 +8,8 @@ export const metadata = {
   title: "حزام ليفة السيليكون المزدوجة — وداعاً للجلد الميت والبكتيريا",
   description: "ليفة السيليكون الطبي المزدوجة للتقشير والتدليك. تصل لكامل الظهر والجسم بسهولة، مضادة للبكتيريا ومريحة جداً. توصيل متوفر لجميع 58 ولاية والدفع عند الاستلام.",
 };
+
+const SILICONE_PIXEL_ID = "1031581459671396";
 
 export default async function LifaSiliconePage() {
   const { data } = await supabase
@@ -26,6 +29,24 @@ export default async function LifaSiliconePage() {
 
   return (
     <main className="min-h-screen">
+      <Script
+        id="silicone-loofah-dedicated-pixel-alias"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${SILICONE_PIXEL_ID}');
+            fbq('trackSingle', '${SILICONE_PIXEL_ID}', 'PageView');
+          `,
+        }}
+      />
       <SiliconeLoofahShowcase initialZonePrices={initialZonePrices} />
     </main>
   );

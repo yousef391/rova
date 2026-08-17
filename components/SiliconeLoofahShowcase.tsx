@@ -10,6 +10,8 @@ interface SiliconeLoofahShowcaseProps {
   initialZonePrices: Record<number, number>;
 }
 
+const SILICONE_PIXEL_ID = "1031581459671396";
+
 export default function SiliconeLoofahShowcase({ initialZonePrices }: SiliconeLoofahShowcaseProps) {
   const [selectedBundle, setSelectedBundle] = useState<1 | 2 | 3>(1); // Default to 1 piece
   const [selectedWilaya, setSelectedWilaya] = useState("");
@@ -23,7 +25,18 @@ export default function SiliconeLoofahShowcase({ initialZonePrices }: SiliconeLo
   const abandonedLeadSent = useRef(false);
   const orderFormRef = useRef<HTMLDivElement | null>(null);
 
-  const { sendEvent } = useMetaEvents();
+  const { sendEvent } = useMetaEvents(undefined, SILICONE_PIXEL_ID);
+
+  // Initialize dedicated Meta Pixel 1031581459671396
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const fbq = (window as unknown as { fbq?: (action: string, idOrEvent: string, eventName?: string, params?: Record<string, unknown>) => void }).fbq;
+      if (fbq) {
+        fbq("init", SILICONE_PIXEL_ID);
+        fbq("trackSingle", SILICONE_PIXEL_ID, "PageView");
+      }
+    }
+  }, []);
 
   // Pricing calculation
   const getProductPrice = () => {
